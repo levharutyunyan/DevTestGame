@@ -24,13 +24,12 @@ User can swap any item on board. If after swap, matches are found the matched it
 Match is a line of same color figures. 
 
 simple match
-![alt text](https://github.com/plexonic/Match3Test/blob/master/Resources/simple_match.jpg)
-
+![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/resources/simple_match.jpg)
 match 4.
-![alt text](https://github.com/plexonic/Match3Test/blob/master/Resources/horizontal_4_match_wo_bomb.jpg)
+![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/resources/horizontal_4_match_wo_bomb.jpg)
 
 square match
-![alt text](https://github.com/plexonic/Match3Test/blob/master/Resources/square_match_wo_bomb.jpg)
+![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/resources/square_match_wo_bomb.jpg)
 
 Game has objective. That is to collect some ammount of color figures items. Ex, 10 red, 20 green.
 User has predefined moves count using which he has to fullfil the objective. Every successfull swap is counted as a move.
@@ -46,15 +45,15 @@ There are power ups in game.
 ##### Line Bomb
 If player match is 4 size or longer than horizontal or  vertical "Line Bomb" boosters are generated.
 
-![alt text](https://github.com/plexonic/Match3Test/blob/master/Resources/horizontal_4_match.jpg)
-![alt text](https://github.com/plexonic/Match3Test/blob/master/Resources/vertical_4_match.jpg)
+![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/resources/horizontal_4_match.jpg)
+![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/resources/vertical_4_match.jpg)
 
 Line Bomb clears whole row or column depending on its type.
 
 ##### Radial Bomb
 If player match is square match than "Radial Bomb" booster is generated.
 
-![alt text](https://github.com/plexonic/Match3Test/blob/master/Resources/square_match.jpg)
+![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/resources/square_match.jpg)
 
 Radial Bomb clears all it's neighbours.
 
@@ -78,4 +77,4 @@ There are some values that should be possible to configure using JSON file
 3. Objectives count (max 3) their colors and values. i.e. 10 red, 12 green, 20 blue.
 4. Figures colors count. (min 3, max 5)
 
-![alt text](https://github.com/plexonic/Match3Test/blob/master/Resources/preview.jpg)
+![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/resources/preview.jpg)
