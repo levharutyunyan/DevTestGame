@@ -32,7 +32,8 @@ if __name__ == '__main__':
 		generator = 'Xcode'
 		cmakeCmd = ['cmake', '-G', generator, sourcePath, '-DMACOSX=TRUE', '-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9', '-DCMAKE_OSX_SYSROOT=macosx']
 	elif platformStr == 'WIN_VS':
-		print("windows platform not implemented yet...")
+		generator = 'Visual Studio 15 2017'
+		cmakeCmd = ['cmake', '-G', generator, sourcePath, '-A', 'x64']
 	else:
 		print("Unknown platform " + args.platform)
 
