@@ -3,6 +3,6 @@
 
 int main() {
     GameController* gc = new GameController();
-    gc->runLoop();
+    gc->startGame();
     return 0;
 }
