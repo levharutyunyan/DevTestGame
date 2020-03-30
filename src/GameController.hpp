@@ -1,23 +1,35 @@
-//
-//  GameController.hpp
-//  SFMLTest
-//
-//  Created by David Aleksanyan on 3/23/20.
-//  Copyright © 2020 David Aleksanyan. All rights reserved.
-//
 
 #ifndef GameController_hpp
 #define GameController_hpp
 
+#include <SFML/Graphics.hpp>
 #include <stdio.h>
 
 #endif /* GameController_hpp */
 
+using namespace sf;
+
+enum GameStatus {
+    NotStarted,
+    Started,
+    Won,
+    Failed
+};
+
 class GameController {
-private :
 
 public :
     GameController();
 
-    void runLoop();
+    void startGame();
+
+    void updateGameStatus(GameStatus &status);
+
+private:
+    GameStatus _gameStatus = NotStarted;
+    RenderWindow *_app;
+
+    void run();
+
+
 };
