@@ -88,25 +88,26 @@ All required graphics are provided in repository.
 
 #### Match.
 
-simple match
+Simple match <br/>
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/simple_match.jpg)
 
-match 4.
+Match 4. <br>
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/horizontal_4_match_wo_bomb.jpg)
 
-square match
+Square match <br/>
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/square_match_wo_bomb.jpg)
 
+<br/>
+#### Boosters <br/>
 
-#### Boosters
-
-horizontal bomb
+Vertical bomb <br/>
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/horizontal_4_match.jpg)
 
-vertical bomb
+Horizontal bomb <br/>
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/vertical_4_match.jpg)
 
-radial bomb
+Radial bomb <br/>
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/square_match.jpg)
 
+<br/>
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/preview.jpg)
