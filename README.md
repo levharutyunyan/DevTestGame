@@ -72,8 +72,8 @@ For example pattern could be defined as T like shape. After swap game should sea
 T like shape:
 ```
     ooo
-      o
-	  o
+     o
+     o
 ```
 
 **2. Shuffle if there are no moves.**
