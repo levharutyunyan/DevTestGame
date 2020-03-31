@@ -1,80 +1,110 @@
-# Match 3 game short description
+## Project description.
 
-## Project overview
-Implement a match 3 game. 
+Implement a match 3 game.
 
-Example: Homescapes, Garedenscapes in AppStore, PlayStore
-For general match 3 logic check PetSavers on Facebook, AppStore, PlayStore
+Reference games Example: Homescapes, Garedenscapes in AppStore, PlayStore.
 
-### Objective
-Implement match3 game with basic gameplay functionality.
+### Main tasks:
 
-### Game description
+**1.  Game Config. Basic gameplay. Dropping logic. Objectives.**
+**Game Config.**
+Game should have a configuration JSON file providing these config values.
+1. Board row/column size. (min 7, max 10)
+2. Moves count.
+3. Objectives count (max 3) their colors and values. i.e. 10 red, 12 green, 20 blue.
+4. Figures colors count. (min 3, max 5)
 
-#### UI
-There are two screens in the game. Intro screen and gameplay screen.
-On Intro screen there is a "Start" button on clicking which Gameplay screen is opened.
-On Gameplay screen game board is drawn with color figure items.
+**	Basic gameplay.**
 
-#### Gameplay short description
-Gameplay is like any other match3 game and can be check in example games above.
-User can swap any item on board. If after swap, matches are found the matched items are cleared and items are dropping down and new matches are searched.
+***Board generation.***
+Board should be generated based on config rules (See Game config)
+***Swap logic.***
+It is possible to swap any two neighbour figures.
+Click on figure1 then clicking on figure2 swaps figure1 and figure2.
+***Matches.***
+Match is a predefined combination of same color figures.
+In the current task we define a match as a group of more than two figures with same color positioned on same line horizontal or vertical.
+If after swap there is a match, swap is considered as successful and matched figures are removed from board.
+If the swap didn't result a match, the figures are swaping back to their initial cells.
+***Dropping logic.***
+When matched figures are cleared from board top figures are dropping into freed cells.
+When dropping is finished, the game should check if the dropping resulted the creation of a new match and remove those matched figures from the board.
 
-#### What is a match.
-Match is a line of same color figures. 
+**Objectives**
+
+Every successful match decreases moves count.
+Game has objectives. Objectives are defined in the game config section. 
+After successfull match, if the collected figures are in the list of objectives, the objectives number should go down by the number of collected figures.
+If all objectives are completed (counter of objective is 0), the game is considered complete and a "Game Complete" popup should be shown.
+If the player is out of moves before completing all game objectives, a "Game Failed" popup should appear.
+
+
+**2. Boosters. Radial. Horizontal. Vertical. Affecting (detonating) each other.**
+Boosters are special type of figures that are generated when specific matches are made. 
+***Boosters generation:***
+*Radial.* 
+Radial booster (bomb) is generated when the player forms a square match, consisting of 4 same color figures.
+*Horizontal line bomb.* 
+This booster is generated when the player forms a vertical line match, consisting of 4 same color figures.
+*Vertical line bomb*. 
+This booster is generated when the player forms a horizontal line match, consisting of 4 same color figures.
+***Boosters activation:***
+All boosters are activated when the player taps on them.
+Tap on a bomb is considered a move. 
+Two boosters swapped with each other is not a successful match and booster figures are swapped back to their cells. If a match is not successful, a move is not subtracted.
+***Boosters effect:***
+*Radial.*
+When tapped on a Radial booster, it clears itself and all adjacent figures up/down left/right and 4 diagonals. 
+*Horizontal line bomb.*
+When tapped on, it clears itself and the whole horizontal line it was on.
+*Vertical line bomb.*
+When tapped on, it clears itself and the whole vertical line it was on.
+If the booster effect affects another booster, the affected booster should detonate the same way as if it has been tapped on.
+All figfures that have been cleared from any of the boosters effects, and that are in the objectives list, should decrease objective counts.
+
+
+### Bonus tasks:
+
+**1. Matching pattern.**
+Instead of simple matching model defined in main task it should be possible to define a list of matching patterns.
+For example pattern could be defined as T like shape. After swap game should search for all defined patterns and clear them if found.
+
+T like shape:
+```
+    ooo
+      o
+	  o
+```
+
+**2. Shuffle if there are no moves.**
+The alignment of figures on the board can result a situation that no match can be made. At that point existing board figures should be shuffled. The board should be shuffled as many times, as necessary to create a possibility to match.
+
+### Technical specification.
+Game should be written in C++ language using SFML framework.
+Initial sources can be found in this repository.
+Project can be built using Cmake tool. 
+
+All required graphics are provided in repository.
+
+#### Match.
 
 simple match
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/simple_match.jpg)
 match 4.
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/horizontal_4_match_wo_bomb.jpg)
-
 square match
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/square_match_wo_bomb.jpg)
-
-Game has objective. That is to collect some ammount of color figures items. Ex, 10 red, 20 green.
-User has predefined moves count using which he has to fullfil the objective. Every successfull swap is counted as a move.
-Game is considered as won if player manages to fullfil the objective before he runs out of moves. If the moves are finished before fullfiling the objective game is lost.
-
-If player wins the game 'You won' popup is shown with "Play Again" button on it.
-If he loses 'You loose' popup is shown with "Play Again" button on it.
 
 When 'Play Again' button is pressed game is restarted.
 
 #### Boosters
-There are power ups in game.
-##### Line Bomb
-If player match is 4 size or longer than horizontal or  vertical "Line Bomb" boosters are generated.
+##### Line Bombs
 
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/horizontal_4_match.jpg)
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/vertical_4_match.jpg)
 
-Line Bomb clears whole row or column depending on its type.
-
 ##### Radial Bomb
-If player match is square match than "Radial Bomb" booster is generated.
 
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/square_match.jpg)
-
-Radial Bomb clears all it's neighbours.
-
-Boosters are activated when tapped.
-
- For more details check example games listed above.
-
-### Visual requirements
-The only required visual effect is to implement figures dropping animation. All other graphical part can be kept maximal simple.
-Required assets can be found in this repo in "Assets" folder.
-
-### Board generation
-Every board should have randomly geenerated three empty cells. That cells can't have figures on them. See preview.
-Dropping figures should also avoid empty cells. Dropping rules can be seen in any example game above.
-Or check the youtube link, https://youtu.be/LpD7Nh9cZbI?t=214
-
-### Game Configuration
-There are some values that should be possible to configure using JSON file
-1. Board row/column size. (min 7, max 10)
-2. Moves count.
-3. Objectives count (max 3) their colors and values. i.e. 10 red, 12 green, 20 blue.
-4. Figures colors count. (min 3, max 5)
 
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/preview.jpg)
