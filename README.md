@@ -109,5 +109,5 @@ Horizontal bomb <br/>
 Radial bomb <br/>
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/square_match.jpg)
 
-<br/>
+
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/preview.jpg)
