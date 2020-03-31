@@ -90,21 +90,23 @@ All required graphics are provided in repository.
 
 simple match
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/simple_match.jpg)
+
 match 4.
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/horizontal_4_match_wo_bomb.jpg)
+
 square match
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/square_match_wo_bomb.jpg)
 
-When 'Play Again' button is pressed game is restarted.
 
 #### Boosters
-##### Line Bombs
 
+horizontal bomb
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/horizontal_4_match.jpg)
+
+vertical bomb
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/vertical_4_match.jpg)
 
-##### Radial Bomb
-
+radial bomb
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/square_match.jpg)
 
 ![alt text](https://github.com/Playrix-AM/DevTestGame/blob/master/doc/resources/preview.jpg)
