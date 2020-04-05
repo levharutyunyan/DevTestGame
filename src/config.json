@@ -1,0 +1,13 @@
+{
+    "board_row_size" : 8,
+    "board_column_size" : 7,
+    "moves_count" : 15,
+    "objectives_count" : 3,
+    "objectives" : 
+    [{
+        "red" : 10,
+        "green" : 12,
+        "blue" : 20
+    }],
+    "figures_colors_count" : 4
+}

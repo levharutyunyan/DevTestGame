@@ -1,13 +1,11 @@
+#ifndef __GAMECONTROLLER_HPP__
+#define __GAMECONTROLLER_HPP__
 
-#ifndef GameController_hpp
-#define GameController_hpp
-
-#include <SFML/Graphics.hpp>
 #include <stdio.h>
-
-#endif /* GameController_hpp */
-
-using namespace sf;
+#include <iostream>
+#include <SFML/Graphics.hpp>
+#include "GameGrid.hpp"
+#include "utils.hpp"
 
 enum GameStatus {
     NotStarted,
@@ -25,11 +23,23 @@ public :
 
     void updateGameStatus(GameStatus &status);
 
+	bool shouldMove() const;
+	bool shouldSwap() const;
 private:
     GameStatus _gameStatus = NotStarted;
-    RenderWindow *_app;
+    sf::RenderWindow *_app;
+	GameGrid *_grid;
+	sf::Vector2i _mouse_pos;
+	bool _shouldMove;
+	bool _shouldSwap;
+	int _clickCount;
+	std::pair<sf::Vector2i, sf::Vector2i> _clickedGems;
 
+private:
     void run();
-
+	void updateClickedGems(const sf::Vector2i& mouse_pos);
+	void updateStatus();
 
 };
+
+#endif // __GAMECONTROLLER_HPP__
