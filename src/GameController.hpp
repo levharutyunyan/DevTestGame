@@ -19,25 +19,25 @@ class GameController {
 public :
     GameController();
 
-    void startGame();
+    void parseConfigFile(const std::string& configFilename);
+	bool isCorrectConfigFile(const std::string& configFilename, Json::Reader& reader, Json::Value& root);
+	void startGame();
 
     void updateGameStatus(GameStatus &status);
 
-	bool shouldMove() const;
-	bool shouldSwap() const;
 private:
     GameStatus _gameStatus = NotStarted;
     sf::RenderWindow *_app;
 	GameGrid *_grid;
 	sf::Vector2i _mouse_pos;
-	bool _shouldMove;
-	bool _shouldSwap;
 	int _clickCount;
-	std::pair<sf::Vector2i, sf::Vector2i> _clickedGems;
-
+	utils::GemPair _clickedGems;
+	// TODO: Add here OBJEctives and make it with unordered_set
 private:
     void run();
-	void updateClickedGems(const sf::Vector2i& mouse_pos);
+	void update();
+
+	void updateClickedGems();
 	void updateStatus();
 
 };
