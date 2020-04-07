@@ -2,21 +2,44 @@
 //#include "utils.hpp"
 
 GameController::GameController()
-	: _gameStatus(NotStarted)
+	: _gameStatus(GameStatus::Playing)
+	, _app(nullptr)
 	, _grid(nullptr)
+	, _objectives(nullptr)
+	, _turns(nullptr)
+	, _gameOverWindow(nullptr)
 	, _mouse_pos(-1, -1)
 	, _clickCount(0)
 	, _clickedGems(utils::NULL_GEM_PAIR)
 {
-}
-
-void GameController::updateGameStatus(GameStatus &status) 
-{
-    _gameStatus = status;
+	/*parseConfigFile(utils::CONFIG_FILENAME);
+	this->_grid = new GameGrid(utils::CONFIG_FILENAME, this->_objectives->getObjectives());*/
 }
 
 void GameController::parseConfigFile(const std::string & configFilename)
 {
+	Json::Reader reader;
+	Json::Value root;
+	if (isCorrectConfigFile(configFilename, reader, root))
+	{
+		std::vector<std::pair<utils::GemType, int>> objectiveGems;
+		for (std::size_t i = 0; i < root["objectives"].size(); ++i)
+		{
+			std::string gemType = root["objectives"][(int)i][0].asString();
+			int count = root["objectives"][(int)i][1].asInt();
+			objectiveGems.push_back({ utils::getGemType(gemType), count });
+		}
+		this->_objectives = new Objectives(objectiveGems);
+	}
+}
+
+GameController::~GameController()
+{
+	delete this->_app;
+	delete this->_grid;
+	delete this->_objectives;
+	delete this->_turns;
+	delete this->_gameOverWindow;
 }
 
 bool GameController::isCorrectConfigFile(const std::string & configFilename, Json::Reader & reader, Json::Value & root)
@@ -27,62 +50,111 @@ bool GameController::isCorrectConfigFile(const std::string & configFilename, Jso
 		bool parseSuccess = reader.parse(config_doc, root, false);
 		if (parseSuccess)
 		{
-			if (!root["board_row_size"].isInt() || 7 > root["board_row_size"].asInt()
-				|| root["board_row_size"].asInt() > 10)
+			if (!root["board_row_size"].isInt() || utils::MIN_ROWS > root["board_row_size"].asInt()
+				|| root["board_row_size"].asInt() > utils::MAX_ROWS)
 			{
 				return false;
 			}
-			if (!root["board_column_size"].isInt() || 7 > root["board_column_size"].asInt()
-				|| root["board_column_size"].asInt() > 10)
+			if (!root["board_column_size"].isInt() || utils::MIN_COLUMNS > root["board_column_size"].asInt()
+				|| root["board_column_size"].asInt() > utils::MAX_COLUMNS)
 			{
 				return false;
 			}
-			if (!root["objectives"].isArray() || 1 > root["objectives"].size()
-				|| root["objectives"].size() > 3)
+			if (!root["objectives"].isArray() || utils::MIN_OBJECTIVES_COUNT > root["objectives"].size()
+				|| root["objectives"].size() > utils::MAX_OBJECTIVES_COUNT)
 			{
 				return false;
 			}
-			if (!root["figures_colors_count"].isInt() || 3 > root["figures_colors_count"].asInt()
-				|| root["figures_colors_count"].asInt() > 5)
+			if (!root["figures_colors_count"].isInt() || utils::MIN_FIGURES_COUNT > root["figures_colors_count"].asInt()
+				|| root["figures_colors_count"].asInt() > utils::MAX_FIGURES_COUNT)
 			{
 				return false;
 			}
-
-			//TODO if(undefined_color)
+			int figures_count = root["figures_colors_count"].asInt();
+			int obj_size = root["objectives"].size();
+			if (root["figures_colors_count"].asInt() < static_cast<int>(root["objectives"].size()))
+			{
+				return false;
+			}
+			std::vector<utils::GemType> objectiveGems;
+			for (std::size_t i = 0; i < root["objectives"].size(); ++i)
+			{
+				if (root["objectives"][(int)i][0].isString() == false
+					|| root["objectives"][(int)i][1].isInt() == false
+					|| root["objectives"][(int)i][1].asInt() < 0)
+				{
+					return false;
+				}
+				std::string type = root["objectives"][(int)i][0].asString();
+				objectiveGems.push_back(utils::getGemType(type));
+			}
+			for (int i = 0; i < objectiveGems.size(); ++i)
+			{
+				if (objectiveGems[i] == utils::GemType::UNKNOWN)
+				{
+					return false;
+				}
+			}
+			for (int i = 0; i < objectiveGems.size(); ++i)
+			{
+				for (int j = i + 1; j < objectiveGems.size(); ++j)
+				{
+					if (objectiveGems[i] == objectiveGems[j])
+					{
+						return false;
+					}
+				}
+			}
 		}
 		else
 		{
-			std::cout << reader.getFormatedErrorMessages();
 			std::cout << reader.getFormattedErrorMessages();
 			return false;
 		}
 	}
-	
 	return true;
 }
 
-void GameController::startGame() {
-    _app = new sf::RenderWindow(sf::VideoMode(utils::WINDOW_WIDTH, utils::WINDOW_HEIGHT), "Match3Game", sf::Style::Close);
-    _app->setFramerateLimit(utils::MAX_FRAMERATE_LIMIT);
+void GameController::startGame() 
+{
+	initialize(utils::CONFIG_FILENAME);
     run();
 }
 
 void GameController::update()
 {
+	if (this->_grid->getStatus() == GridStatus::WAITING)
+	{
+		this->_objectives->updateObjectives(this->_grid->getUpdatedObjectives());
+	}
 	this->_grid->updateStatus();	
 	updateClickedGems();
 }
 
-void GameController::run() {
+void GameController::draw()
+{
+	if (this->_gameStatus != GameStatus::Playing)
+	{
+		this->_app->draw(*this->_gameOverWindow);
+		return;
+	}
+	this->_app->draw(*this->_objectives);
+	this->_app->draw(*this->_turns);
+	this->_app->draw(*this->_grid);
+}
 
-	std::vector<std::pair<int, utils::GemType>> objectives{ {10, utils::GemType::BLUE},
-													{12, utils::GemType::GREEN},
-													{20, utils::GemType::RED} };
-	GameGrid grid(utils::CONFIG_FILENAME, &objectives);
-	this->_grid = &grid;
+void GameController::run() 
+{
     while (this->_app->isOpen()) 
     {
-        this->_app->clear(sf::Color(50, 150, 150, 255));
+		updateStatus();
+		/*if (this->_gameStatus != GameStatus::Playing)
+		{
+			this->_app->draw(*this->_gameOverWindow);
+		}
+        */
+		this->_app->clear(utils::GAME_CONTROLLER_COLOR);
+
 		sf::Event event;
         while (this->_app->pollEvent(event)) 
 		{
@@ -100,11 +172,21 @@ void GameController::run() {
 				}
 			}
         }
-        update();
 		
-		this->_app->draw(grid);
+        update();
+		draw();
 		this->_app->display();
      }
+}
+
+void GameController::initialize(const std::string & configFilename)
+{
+	parseConfigFile(configFilename);
+	this->_grid = new GameGrid(configFilename, this->_objectives->getObjectives());
+	this->_turns = new Turns(configFilename);
+	this->_gameOverWindow = new GameOverWindow();
+	this->_app = new sf::RenderWindow(sf::VideoMode(utils::WINDOW_WIDTH, utils::WINDOW_HEIGHT), "Match3Game", sf::Style::Close);
+	this->_app->setFramerateLimit(utils::MAX_FRAMERATE_LIMIT);
 }
 
 void GameController::updateClickedGems()
@@ -116,6 +198,12 @@ void GameController::updateClickedGems()
 	sf::Vector2i currentGem = this->_grid->getGridIndices(this->_mouse_pos);
 	std::cout << "updating clickedGems\n";
 	std::cout << "click: " << this->_clickCount << " " << currentGem.x << " " << currentGem.y << "\n";
+
+	if (currentGem.x < 0 || currentGem.y < 0 || currentGem.y >= this->_grid->getRows() || currentGem.x >= this->_grid->getColumns())
+	{
+		--this->_clickCount;
+		return;
+	}
 	if (this->_clickCount == 1)
 	{
 		this->_clickedGems.first = currentGem;
@@ -127,19 +215,42 @@ void GameController::updateClickedGems()
 		{
 			this->_clickedGems = utils::NULL_GEM_PAIR;
 		}
-		else
+		bool isSuccessfuTurn = this->_grid->swapGems(this->_clickedGems);
+		if (isSuccessfuTurn)
 		{
-			this->_grid->setGemPair(this->_clickedGems);
+			this->_turns->updateTurns();
 		}
-		this->_grid->swapGems();
 		this->_clickCount -= 2;
 	}
 }
 
 void GameController::updateStatus()
 {
-	//NotStarted
-	//Started
-	//Won
-	//Lost
+	switch (this->_gameStatus)
+	{
+	case GameStatus::Playing:
+	{
+		bool areTurnsLeft = this->_turns->areTurnsLeft();
+		bool areObjectivesLeft = this->_objectives->areObjectivesLeft();
+		if (areTurnsLeft == false && areObjectivesLeft == true)
+		{
+			this->_gameStatus = GameStatus::Failed;
+		}
+		else if (areObjectivesLeft == false)
+		{
+			this->_gameStatus = GameStatus::Won;
+		}
+		break;
+	}
+	case GameStatus::Won:
+	{
+		this->_gameOverWindow->haveWon(true);
+		break;
+	}
+	case GameStatus::Failed:
+	{
+		this->_gameOverWindow->haveWon(false);
+		break;
+	}
+	}
 }

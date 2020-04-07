@@ -28,7 +28,16 @@ namespace utils
 		}
 		}
 	}
-	void printPattern(const Pattern& pattern)
+	GemType getGemType(const std::string & gemName)
+	{
+		if (gemName == "red") { return GemType::RED; }
+		if (gemName == "orange") { return GemType::ORANGE; }
+		if (gemName == "green") { return GemType::GREEN; }
+		if (gemName == "blue") { return GemType::BLUE; }
+		if (gemName == "violet") { return GemType::VIOLET; }
+		return GemType::UNKNOWN;
+	}
+	/*void printPattern(const Pattern& pattern)
 	{
 		std::cout << "print pattern\n";
 		for (int i = 0; i < pattern.size(); ++i)
@@ -36,7 +45,7 @@ namespace utils
 			std::cout << "[" << pattern[i].x << " ; " << pattern[i].y << "] ";
 		}
 		std::cout << "\n";
-	}
+	}*/
 
 	bool isValidPattern(const Pattern & pattern)
 	{

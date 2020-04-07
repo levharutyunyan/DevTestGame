@@ -4,10 +4,10 @@
     "moves_count" : 15,
     "objectives_count" : 3,
     "objectives" : 
-    [{
-        "red" : 10,
-        "green" : 12,
-        "blue" : 20
-    }],
-    "figures_colors_count" : 4
+    [
+        [ "red" , 100 ],
+        [ "green" , 120 ],
+        [ "blue" , 200 ]
+    ],
+    "figures_colors_count" : 5
 }

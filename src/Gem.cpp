@@ -24,10 +24,6 @@ void Gem::draw(sf::RenderTarget & target, sf::RenderStates states) const
 	target.draw(this->_sprite, states);
 }
 
-void Gem::pop()
-{
-}
-
 utils::GemType Gem::getGemType()
 {
 	if (this->_filename == utils::RED_GEM_FILENAME) { return utils::GemType::RED; }
@@ -35,19 +31,21 @@ utils::GemType Gem::getGemType()
 	if (this->_filename == utils::GREEN_GEM_FILENAME) { return utils::GemType::GREEN; }
 	if (this->_filename == utils::BLUE_GEM_FILENAME) { return utils::GemType::BLUE; }
 	if (this->_filename == utils::VIOLET_GEM_FILENAME) { return utils::GemType::VIOLET; }
+	
+	return utils::GemType::UNKNOWN;
 }
 
-std::string Gem::randomGemFilename(const std::vector<std::pair<int, utils::GemType>>* objs, int figures_colors_count)
+std::string Gem::randomGemFilename(const std::vector<std::pair<utils::GemType, int>>& objs, int figures_colors_count)
 {
 	static std::vector<utils::GemType> gems;
 
 	// On initialization
 	if (gems.empty())
 	{
-		gems.resize(objs->size());
+		gems.resize(objs.size());
 		for (int i = 0; i < gems.size(); ++i)
 		{
-			gems[i] = (*objs)[i].second;
+			gems[i] = objs[i].first;
 		}
 		std::vector<utils::GemType> all_gem_types = utils::ALL_GEM_TYPES_VECTOR;
 		for (int i = 0; i < gems.size(); ++i)

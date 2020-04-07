@@ -18,9 +18,8 @@ struct Gem : public sf::Drawable, public sf::Transformable
 	void setImage(const std::string& image_filename);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	friend void swap(Gem& lhs, Gem& rhs);
-	void pop();
 	utils::GemType getGemType();
-	static std::string randomGemFilename(const std::vector<std::pair<int, utils::GemType>>* objs, int figures_colors_count);
+	static std::string randomGemFilename(const std::vector<std::pair<utils::GemType, int>>& objs, int figures_colors_count);
 	char getShortFilename() const;
 };
 

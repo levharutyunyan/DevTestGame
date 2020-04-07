@@ -20,7 +20,5 @@ SpriteFactory::SpriteFactory()
 void SpriteFactory::populateGems()
 {
 	this->_gems.resize(utils::ALL_GEM_TYPES_VECTOR.size());
-	{
-		
-	}
+	
 }

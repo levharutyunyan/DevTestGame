@@ -2,7 +2,8 @@
 #include <time.h>
 #include <SFML/System.hpp>
 
-int main() {
+int main() 
+{
 	srand(NULL);
 
 	GameController* gc = new GameController();

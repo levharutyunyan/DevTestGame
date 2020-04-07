@@ -2,17 +2,18 @@
 #include <iostream>
 
 GameGrid::GameGrid(const std::string& json_filename,
-	std::vector<std::pair<int, utils::GemType>>* objectives)
+		const std::vector<std::pair<utils::GemType, int>>& objectives)
 	: _gridXPos(utils::GRID_Y_POS)
 	, _gridYPos(utils::GRID_X_POS)
 	, _rows(-1)
 	, _columns(-1)
 	, _figuresColorCount(-1)
 	, _gridStatus(GridStatus::NONE)
+	, _isSuccessfulTurn(false)
 	// , _gridXScale(static_cast<float>(utils::GRID_X_SCALE))
 	// , _gridYScale(static_cast<float>(utils::GRID_Y_SCALE))
 	, _objectives(objectives)
-	, _gemPair(utils::NULL_GEM_PAIR)
+	//, _gemPair(utils::NULL_GEM_PAIR)
 {
 	parseJsonFile(json_filename);
 	getGraphicsElements();
@@ -102,53 +103,60 @@ void GameGrid::fillGems()
 			this->_gems[i][j].setImage(Gem::randomGemFilename(this->_objectives, this->_figuresColorCount));
 			this->_gems[i][j].setPosition(static_cast<float>(this->_gridYPos + utils::TILE_HEIGHT * j + 5),
 				static_cast<float>(this->_gridXPos + utils::TILE_WIDTH * i + 5));
-			// TODO: Change here later
-			//std::cout << "grid_index: " << i << " " << j << "\n";
-			//std::cout << "grid_index_filename: " << this->_gems[i][j]._filename << "\n";
+		
 		}
 	}
 }
 
-
-void GameGrid::swapGems()
+bool GameGrid::swapGems(const utils::GemPair& gemPair)
 {
-	 if (this->_gemPair.first == this->_gemPair.second || std::abs(this->_gemPair.first.x - this->_gemPair.second.x) + std::abs(this->_gemPair.first.y - this->_gemPair.second.y) > 1)
+
+	 if (gemPair.first == gemPair.second || std::abs(gemPair.first.x - gemPair.second.x) + std::abs(gemPair.first.y - gemPair.second.y) > 1)
 	 {
+		this->_isSuccessfulTurn = false;
 	 	this->_gridStatus = GridStatus::WAITING;
-	 	return;
+	 	return false;
 	 }
 	std::cout << "swapping elements\n";
-	std::cout << "left: " << this->_gemPair.first.x << " " << this->_gemPair.first.y << " right: " << this->_gemPair.second.x << " " << this->_gemPair.second.y << "\n";
-	std::swap(this->_gems[this->_gemPair.first.x][this->_gemPair.first.y], this->_gems[this->_gemPair.second.x][this->_gemPair.second.y]);
+	std::cout << "left: " << gemPair.first.x << " " << gemPair.first.y << " right: " << gemPair.second.x << " " << gemPair.second.y << "\n";
+	swap(this->_gems[gemPair.first.x][gemPair.first.y], this->_gems[gemPair.second.x][gemPair.second.y]);
 	std::cout << "swapped elements\n";
-	utils::Pattern lhsPosPattern = checkForMatch(this->_gemPair.first);
-	utils::Pattern rhsPosPattern = checkForMatch(this->_gemPair.second);
+	
+	utils::Pattern lhsPosPattern = checkForMatch(gemPair.first);
+	utils::Pattern rhsPosPattern = checkForMatch(gemPair.second);
 	if(lhsPosPattern == utils::NULL_PATTERN && rhsPosPattern != utils::NULL_PATTERN)
 	{
-		std::swap(this->_gems[this->_gemPair.first.x][this->_gemPair.first.y], this->_gems[this->_gemPair.second.x][this->_gemPair.second.y]);
+		this->_isSuccessfulTurn = false;
+		swap(this->_gems[gemPair.first.x][gemPair.first.y], this->_gems[gemPair.second.x][gemPair.second.y]);
 		this->_gridStatus = GridStatus::WAITING;
+		return false;
 	}
 	if (lhsPosPattern != utils::NULL_PATTERN)
 	{
-		popGems(lhsPosPattern);
+		printPattern(lhsPosPattern);
+		
+		markGems(lhsPosPattern);
 	}
 	if (rhsPosPattern != utils::NULL_PATTERN)
 	{
-		popGems(rhsPosPattern);
+		printPattern(rhsPosPattern);
+		markGems(rhsPosPattern);
 	}
-	this->_gemPair = utils::NULL_GEM_PAIR;
+	std::cout << "finished swapping\n";
+	this->_gridStatus = GridStatus::DELETING;
+	return true;
 }
 
 sf::Vector2i GameGrid::getGridIndices(const sf::Vector2i & mouse_pos) const
 {
-	//std::cout << "gridXpos: " << this->_gridXPos << " mouseXPos " << mouse_pos.x << "\n";
-	//std::cout << "gridYpos: " << this->_gridYPos << " mouseYPos " << mouse_pos.y << "\n";
-	sf::Vector2i grid_index(mouse_pos.y - static_cast<int>(this->_gridYPos),
+	std::cout << "gridXpos: " << this->_gridXPos << " mouseXPos " << mouse_pos.x << "\n";
+	std::cout << "gridYpos: " << this->_gridYPos << " mouseYPos " << mouse_pos.y << "\n";
+	sf::Vector2i grid_index(mouse_pos.y - static_cast<int>(this->_gridXPos),
 		mouse_pos.x - static_cast<int>(this->_gridYPos));
 
-	grid_index.x = grid_index.x / this->_gems[0][0]._height;
-	grid_index.y = grid_index.y / this->_gems[0][0]._width;
-	// std::cout << "grid_index: " << grid_index.x << " " << grid_index.y << "\n";
+	grid_index.x = grid_index.x / this->_tiles[0][0]._height;
+	grid_index.y = grid_index.y / this->_tiles[0][0]._width;
+	 //std::cout << "grid_index: " << grid_index.x << " " << grid_index.y << "\n";
 	return grid_index;
 }
 
@@ -187,18 +195,18 @@ void GameGrid::updateStatus()
 	}
 	case GridStatus::SWAPPING:
 	{
-		swapGems();
+		//swapGems();
 		this->_gridStatus = GridStatus::DELETING;
 		break;
 	}
 	case GridStatus::WAITING:
 	{
-		std::cout << "waiting\n";
-		if(this->_gemPair != utils::NULL_GEM_PAIR)
+		//std::cout << "waiting\n";
+		/*if(this->_gemPair != utils::NULL_GEM_PAIR)
 		{
 			this->_gridStatus = GridStatus::SWAPPING;
 			std::cout << "waiting is over\n";
-		}
+		}*/
 		break;
 	}
 	}
@@ -210,18 +218,28 @@ utils::Pattern GameGrid::checkForMatch(const sf::Vector2i & position)
 	utils::Pattern pattern;
 	pattern.push_back(position);
 
-	findPattern(position, pattern, sf::Vector2i(0, 1));
-	findPattern(position, pattern, sf::Vector2i(0, -1));
-	findPattern(position, pattern, sf::Vector2i(1, 0));
-	findPattern(position, pattern, sf::Vector2i(-1, 0));
+	searchByDirection(position, pattern, sf::Vector2i(0, 1));
+	searchByDirection(position, pattern, sf::Vector2i(0, -1));
+	searchByDirection(position, pattern, sf::Vector2i(1, 0));
+	searchByDirection(position, pattern, sf::Vector2i(-1, 0));
 
 	return (utils::isValidPattern(pattern) ? pattern : utils::Pattern());
 }
 
-void GameGrid::setGemPair(const utils::GemPair& gemPair)
+//void GameGrid::setGemPair(const utils::GemPair& gemPair)
+//{
+//	this->_gemPair = gemPair;
+//	this->_gridStatus = GridStatus::SWAPPING;
+//}
+
+std::vector<std::pair<utils::GemType, int>> GameGrid::getUpdatedObjectives() const
 {
-	this->_gemPair = gemPair;
-	this->_gridStatus = GridStatus::SWAPPING;
+	return this->_objectives;
+}
+
+GridStatus GameGrid::getStatus() const
+{
+	return this->_gridStatus;
 }
 
 void GameGrid::setStatus(GridStatus status)
@@ -229,11 +247,34 @@ void GameGrid::setStatus(GridStatus status)
 	this->_gridStatus = status;
 }
 
+void GameGrid::printPattern(const utils::Pattern & pattern)
+{
+	std::cout << "print pattern\n";
+	for (int i = 0; i < pattern.size(); ++i)
+	{
+		std::cout << "[" << pattern[i].x << " ; " << pattern[i].y << "] { " << this->_gems[pattern[i].x][pattern[i].y].getShortFilename() << " }, ";
+	}
+	std::cout << "\n";
+
+}
+
+int GameGrid::getRows() const
+{
+	return this->_rows;
+}
+
+int GameGrid::getColumns() const
+{
+	return this->_columns;
+}
+
+bool GameGrid::getTurnResult() const
+{
+	return this->_isSuccessfulTurn;
+}
+
 void GameGrid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	/*static int a = 0;
-	if (a++ % 2 == 0)
-		return;*/
 	states.transform *= getTransform();
 
 	for (int i = 0; i < this->_tiles.size(); ++i)
@@ -256,22 +297,21 @@ void GameGrid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			//std::cout << "drawing: " << "[ " << i << ": " << j << "] isDeleted: " << this->_affectedGems[i][j] << "\n";
 		}
 	}
-	std::cout << "current grid situation_________\n";
-	for (int i = 0; i < this->_affectedGems.size(); ++i)
-	{
-		for (int j = 0; j < this->_affectedGems[i].size(); ++j)
-		{
-			std::cout << "[" << this->_gems[i][j].getShortFilename() << " " << this->_affectedGems[i][j] << "], ";
-		}
-		std::cout << "\n";
-	}
-	std::cout << "_______________________________\n";
-	system("pause");
+	//std::cout << "current grid situation_________\n";
+	//for (int i = 0; i < this->_affectedGems.size(); ++i)
+	//{
+	//	for (int j = 0; j < this->_affectedGems[i].size(); ++j)
+	//	{
+	//		std::cout << "[" << this->_gems[i][j].getShortFilename() << " " << this->_affectedGems[i][j] << "], ";
+	//	}
+	//	std::cout << "\n";
+	//}
+	//std::cout << "_______________________________\n";
+	//system("pause");
 	//std::cout << "drawing over\n";
 }
 
-// rename to searchByDirection
-void GameGrid::findPattern(sf::Vector2i position, utils::Pattern & pattern, const sf::Vector2i & direction)
+void GameGrid::searchByDirection(sf::Vector2i position, utils::Pattern & pattern, const sf::Vector2i & direction)
 {
 	while (0 <= position.x + direction.x && position.x + direction.x < this->_gems.size()
 		&& 0 <= position.y + direction.y && position.y + direction.y < this->_gems[0].size()
@@ -282,11 +322,10 @@ void GameGrid::findPattern(sf::Vector2i position, utils::Pattern & pattern, cons
 	}
 }
 
-void GameGrid::popGems(const utils::Pattern & pattern)
+void GameGrid::markGems(const utils::Pattern & pattern)
 {
 	for (auto& pos : pattern)
 	{
-		this->_gems[pos.x][pos.y].pop();
 		this->_affectedGems[pos.x][pos.y] = true;
 		this->_affectedColumns[pos.y] = true;
 	}
@@ -300,6 +339,7 @@ void GameGrid::checkColumn(int columnIndex)
 		for(auto& it: tmpPattern)
 		{
 			this->_affectedGems[it.x][it.y] = true;
+			updateObjectives(this->_gems[it.x][it.y].getGemType());
 		}
 	}
 }
@@ -339,66 +379,44 @@ void GameGrid::checkAffectedColumns()
 	}
 }
 
-void GameGrid::updateObjective(utils::GemType gemType)
+void GameGrid::updateObjectives(utils::GemType gemType)
 {
-	// auto it = this->_objectives.find(gemType);
-	/*if(this->_objectives.find(gemType) != this->_objectives.end())
+	/*auto found = std::find_if(this->_objectives.begin(), this->_objectives.end(), 
+	[&gemType](auto a)
 	{
-		this->_objectives[gemType]--;
+		return (int)a.second == (int)type;
+	});
+	if (found != this->_objectives.end())
+	{
+		found->second--;
 	}*/
+
+	for (int i = 0; i < this->_objectives.size(); ++i)
+	{
+		if (this->_objectives[i].first == gemType)
+		{
+			this->_objectives[i].second--;
+			break;
+		}
+	}
 }
 
 void GameGrid::deleteAffectedGems()
 {
 	for (int j = 0; j < this->_affectedColumns.size(); ++j)
 	{
-		if (this->_affectedColumns[j] == true)
+		//if (this->_affectedColumns[j] == true)
 		{
 			for(int i = 0; i < this->_affectedGems.size(); ++i)
 			{
 				if(this->_affectedGems[i][j] == true)
 				{
-					updateObjective(this->_gems[i][j].getGemType());				
-					this->_gems[i][j].pop();
+					updateObjectives(this->_gems[i][j].getGemType());				
 				}
 			}
 		}
 	}
 }
-
-//void GameGrid::dropDown(int columnIndex)
-//{
-//	//Search first deleted gem
-//	int deletedPos = this->_gems.size() - 1;
-//	int notDeletedPos = -1;
-//	while (notDeletedPos >= 0)
-//	{
-//		while (deletedPos > 0 && this->_affectedGems[deletedPos][columnIndex] == false)
-//		{
-//			--deletedPos;
-//		}
-//		//Search first not deleted gem
-//		notDeletedPos = deletedPos;
-//		while (notDeletedPos > 0 && this->_affectedGems[notDeletedPos][columnIndex] == true)
-//		{
-//			--notDeletedPos;
-//		}
-//		if (notDeletedPos == -1)
-//		{
-//			return;
-//		}
-//		std::swap(this->_gems[notDeletedPos][columnIndex], this->_gems[deletedPos][columnIndex]);
-//		std::swap(this->_affectedGems[notDeletedPos][columnIndex], this->_affectedGems[deletedPos][columnIndex]);
-//		/*std::cout << "swapping [deleted: not deleted]: " << deletedPos << ": " << notDeletedPos << "\n";
-//		std::cout << "isDeleted [deleted: not deleted]: " << this->_gems[deletedPos][columnIndex]._isDeleted << ": " << this->_gems[notDeletedPos][columnIndex]._isDeleted << "\n";*/
-//	}
-//	/*std::cout << "dropDown column: " << columnIndex << "\n";
-//	for (int i = 0; i < this->_gems.size(); ++i)
-//	{
-//		std::cout << this->_gems[i][columnIndex]._filename << " " << this->_affectedGems[i][columnIndex] << "\n";
-//	}*/
-//}
-
 
 void GameGrid::dropDown(int columnIndex)
 {
@@ -416,21 +434,9 @@ void GameGrid::dropDown(int columnIndex)
 				this->_gems[j][columnIndex].setImage(tmpFilename);*/
 				j++;
 			}
-			
 		}
 	}
 }
-//void GameGrid::rearangeGemsPositions()
-//{
-//	for (int i = 0; i < this->_gems.size(); ++i)
-//	{
-//		for (int j = 0; j < this->_gems[i].size(); ++j)
-//		{
-//			this->_gems[i][j].setPosition(static_cast<float>(this->_gridYPos + utils::TILE_HEIGHT * j + 5),
-//				static_cast<float>(this->_gridXPos + utils::TILE_WIDTH * i + 5));
-//		}
-//	}
-//}
 
 void GameGrid::dropAffectedColumns()
 {
@@ -453,7 +459,6 @@ void GameGrid::generateNewGems()
 			while (this->_affectedGems[initPos][i] == true)
 			{
 				this->_gems[initPos][i].setImage(Gem::randomGemFilename(this->_objectives, this->_figuresColorCount));
-				//this->_gems[initPos][i]._isDeleted = false;
 				this->_affectedGems[initPos][i] = false;
 				++initPos;
 			}
@@ -461,113 +466,3 @@ void GameGrid::generateNewGems()
 	}
 }
 
-
-GameGrid::Tile::Tile(int width = utils::TILE_WIDTH, int height = utils::TILE_HEIGHT)
-	: _width(width)
-	, _height(height)
-{
-}
-void GameGrid::Tile::setImage(const std::string& image_filename)
-{
-	this->_image.loadFromFile(image_filename);
-	this->_texture.loadFromImage(this->_image);
-	this->_sprite.setTexture(this->_texture);
-	this->_sprite.setScale(static_cast<float>(this->_width) / this->_image.getSize().x,
-		static_cast<float>(this->_height) / this->_image.getSize().y);
-}
-void GameGrid::Tile::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-	states.transform *= getTransform();
-	target.draw(this->_sprite, states);
-}
-//
-//GameGrid::Gem::Gem(int width = utils::GEM_WIDTH, int height = utils::GEM_HEIGHT)
-//	: _width(width)
-//	, _height(height)
-//{
-//}
-//
-//void GameGrid::Gem::setImage(const std::string & image_filename)
-//{
-//	this->_filename = image_filename;
-//	this->_image.loadFromFile(image_filename);
-//	this->_texture.loadFromImage(this->_image);
-//	this->_sprite.setTexture(this->_texture);
-//	this->_sprite.setScale(static_cast<float>(this->_width) / this->_image.getSize().x,
-//		static_cast<float>(this->_height) / this->_image.getSize().y);
-//}
-//
-//void GameGrid::Gem::draw(sf::RenderTarget & target, sf::RenderStates states) const
-//{
-//	states.transform *= getTransform();
-//	target.draw(this->_sprite, states);
-//}
-//
-//
-//
-//void GameGrid::Gem::pop()
-//{
-//}
-//
-//utils::GemType GameGrid::Gem::getGemType()
-//{
-//	if (this->_filename == utils::RED_GEM_FILENAME) { return utils::GemType::RED; }
-//	if (this->_filename == utils::ORANGE_GEM_FILENAME) { return utils::GemType::ORANGE; }
-//	if (this->_filename == utils::GREEN_GEM_FILENAME) { return utils::GemType::GREEN; }
-//	if (this->_filename == utils::BLUE_GEM_FILENAME) { return utils::GemType::BLUE; }
-//	if (this->_filename == utils::VIOLET_GEM_FILENAME) { return utils::GemType::VIOLET; }
-//}
-//
-//std::string GameGrid::Gem::randomGemFilename(const std::vector<std::pair<int, utils::GemType>>* objs, int figures_colors_count)
-//{
-//	static std::vector<utils::GemType> gems;
-//
-//	// On initialization
-//	if (gems.empty())
-//	{
-//		gems.resize(objs->size());
-//		for (int i = 0; i < gems.size(); ++i)
-//		{
-//			gems[i] = (*objs)[i].second;
-//		}
-//		std::vector<utils::GemType> all_gem_types = utils::ALL_GEM_TYPES_VECTOR;
-//		for (int i = 0; i < gems.size(); ++i)
-//		{
-//			all_gem_types.erase(std::remove(all_gem_types.begin(), all_gem_types.end(), gems[i]), all_gem_types.end());
-//		}
-//		for (std::size_t i = gems.size(); i < figures_colors_count; ++i)
-//		{
-//			utils::GemType tmp_gem = all_gem_types[rand() % all_gem_types.size()];
-//			all_gem_types.erase(std::remove(all_gem_types.begin(), all_gem_types.end(), tmp_gem), all_gem_types.end());
-//			gems.push_back(tmp_gem);
-//		}
-//	}
-//
-//	//Gem gem;
-//	utils::GemType random_gem_type = gems[rand() % gems.size()];
-//	return utils::getGemImageFilename(random_gem_type);
-//}
-//
-//char GameGrid::Gem::getShortFilename() const
-//{
-//	if (this->_filename == utils::RED_GEM_FILENAME) { return 'r'; }
-//	if (this->_filename == utils::ORANGE_GEM_FILENAME) { return 'o'; }
-//	if (this->_filename == utils::GREEN_GEM_FILENAME) { return 'g'; }
-//	if (this->_filename == utils::BLUE_GEM_FILENAME) { return 'b'; }
-//	if (this->_filename == utils::VIOLET_GEM_FILENAME) { return 'v'; }
-//}
-//
-//void swap(Gem & lhs, Gem & rhs)
-//{
-//	friend void swap(X& a, X& b)
-//	{
-//		using std::swap; // bring in swap for built-in types
-//
-//		swap(a.base1, b.base1);
-//		swap(a.base2, b.base2);
-//		// ...
-//		swap(a.member1, b.member1);
-//		swap(a.member2, b.member2);
-//		// ...
-//	}
-//}
