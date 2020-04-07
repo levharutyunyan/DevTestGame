@@ -8,7 +8,7 @@
 #include <algorithm>
 
 #include <SFML/Graphics.hpp>
-#include "Gem.hpp"
+#include "Piece.hpp"
 #include "Tile.hpp"
 #include "json/json.h"
 #include "utils.hpp"
@@ -22,12 +22,12 @@ class GameGrid : public sf::Drawable, public sf::Transformable
 {
 private:
 	using Tiles = std::vector<std::vector<Tile>>;
-	using Gems = std::vector<std::vector<Gem>>;
-	using Objectives = std::vector<std::pair<int, utils::GemType>>;
+	using Gems = std::vector<std::vector<Piece>>;
+	using Objectives = std::vector<std::pair<int, utils::PieceType>>;
 	using AffectedGems = std::vector<std::vector<bool>>;
 public:
 	GameGrid(const std::string& json_filename,
-		const std::vector<std::pair<utils::GemType, int>>& objectives);
+		const std::vector<std::pair<utils::PieceType, int>>& objectives);
 	GameGrid();
 private:
 	float _gridXPos;
@@ -42,7 +42,7 @@ private:
 	Gems _gems;
 	AffectedGems _affectedGems;
 	std::vector<bool> _affectedColumns;
-	std::vector<std::pair<utils::GemType, int>> _objectives;
+	std::vector<std::pair<utils::PieceType, int>> _objectives;
 	/*utils::GemPair _gemPair;*/
 	// float _gridXScale;
 	// float _gridYScale;
@@ -62,7 +62,7 @@ public:
 	
 	//Grid status == WAITING
 	//void setGemPair(const utils::GemPair& gemPair);
-	std::vector<std::pair<utils::GemType, int>> getUpdatedObjectives() const;
+	std::vector<std::pair<utils::PieceType, int>> getUpdatedObjectives() const;
 	
 	GridStatus getStatus() const;
 	void setStatus(GridStatus status);
@@ -90,7 +90,7 @@ private:
 	void checkAffectedColumns();
 	
 	// Grid status == DELETING
-	void updateObjectives(utils::GemType type);
+	void updateObjectives(utils::PieceType type);
 	void deleteAffectedGems();
 
 	// Grid status == MOVING

@@ -2,40 +2,40 @@
 
 namespace utils
 {
-	std::string getGemImageFilename(GemType gem_type)
+	std::string getGemImageFilename(PieceType gem_type)
 	{
 		switch (gem_type)
 		{
-		case GemType::RED:
+		case PieceType::RED:
 		{
 			return RED_GEM_FILENAME;
 		}
-		case GemType::ORANGE:
+		case PieceType::ORANGE:
 		{
 			return ORANGE_GEM_FILENAME;
 		}
-		case GemType::GREEN:
+		case PieceType::GREEN:
 		{
 			return GREEN_GEM_FILENAME;
 		}
-		case GemType::BLUE:
+		case PieceType::BLUE:
 		{
 			return BLUE_GEM_FILENAME;
 		}
-		case GemType::VIOLET:
+		case PieceType::VIOLET:
 		{
 			return VIOLET_GEM_FILENAME;
 		}
 		}
 	}
-	GemType getGemType(const std::string & gemName)
+	PieceType getPieceType(const std::string & gemName)
 	{
-		if (gemName == "red") { return GemType::RED; }
-		if (gemName == "orange") { return GemType::ORANGE; }
-		if (gemName == "green") { return GemType::GREEN; }
-		if (gemName == "blue") { return GemType::BLUE; }
-		if (gemName == "violet") { return GemType::VIOLET; }
-		return GemType::UNKNOWN;
+		if (gemName == "red") { return PieceType::RED; }
+		if (gemName == "orange") { return PieceType::ORANGE; }
+		if (gemName == "green") { return PieceType::GREEN; }
+		if (gemName == "blue") { return PieceType::BLUE; }
+		if (gemName == "violet") { return PieceType::VIOLET; }
+		return PieceType::UNKNOWN;
 	}
 	/*void printPattern(const Pattern& pattern)
 	{

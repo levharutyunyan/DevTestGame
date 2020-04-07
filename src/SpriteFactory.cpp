@@ -1,13 +1,12 @@
 #include "Spritefactory.hpp"
 
-
-enum class GemType : int
+enum class PieceType : int
 {
 	RED = 0, ORANGE = 1, GREEN = 2, BLUE = 3, VIOLET = 4
 };
-static const std::vector<GemType> ALL_GEM_TYPES_VECTOR
+static const std::vector<PieceType> ALL_GEM_TYPES_VECTOR
 { 
-	GemType::RED, GemType::ORANGE, GemType::GREEN, GemType::BLUE, GemType::VIOLET 
+	PieceType::RED, PieceType::ORANGE, PieceType::GREEN, PieceType::BLUE, PieceType::VIOLET 
 };
 
 SpriteFactory::SpriteFactory()

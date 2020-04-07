@@ -10,7 +10,7 @@
 Objectives::Objectives()
 {}
 
-Objectives::Objectives(const std::vector<std::pair<utils::GemType, int>>& objectives)
+Objectives::Objectives(const std::vector<std::pair<utils::PieceType, int>>& objectives)
 	: _objectives(objectives)
 	, _objectivesXPos(utils::OBJECTIVES_X_POS)
 	, _objectivesYPos(utils::OBJECTIVES_Y_POS)
@@ -35,7 +35,7 @@ Objectives::Objectives(const std::vector<std::pair<utils::GemType, int>>& object
 
 	for(int i = 0; i < this->_objectives.size(); ++i)
 	{
-		// std::string getGemImageFilename(GemType gem_type);
+		// std::string getGemImageFilename(PieceType gem_type);
 		this->_gems[i].first.setImage(getGemImageFilename(this->_objectives[i].first));		
 		this->_gems[i].first.setPosition(this->_shape.getPosition().x + utils::OBJECTIVES_OFFSET.y + utils::OBJECTIVES_OFFSET.x * i, this->_shape.getPosition().y + utils::OBJECTIVES_OFFSET.y);
 		this->_gems[i].second.setFont(this->_textFont);
@@ -60,10 +60,10 @@ void Objectives::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		}
 	}
 }
-// std::vector<std::pair<utils::GemType, int>> _objectives;
+// std::vector<std::pair<utils::PieceType, int>> _objectives;
 // std::vector<std::pair<Gem, sf::Text>> _gems;
 
-void Objectives::updateObjectives(const std::vector<std::pair<utils::GemType, int>>& objectives)
+void Objectives::updateObjectives(const std::vector<std::pair<utils::PieceType, int>>& objectives)
 {
 	//system("pause");
 	this->_objectives = objectives;
@@ -85,7 +85,7 @@ bool Objectives::areObjectivesLeft() const
 	return false;
 }
 
-std::vector<std::pair<utils::GemType, int>> Objectives::getObjectives() const
+std::vector<std::pair<utils::PieceType, int>> Objectives::getObjectives() const
 {
 	return this->_objectives;
 }

@@ -22,24 +22,24 @@ void GameController::parseConfigFile(const std::string & configFilename)
 	Json::Value root;
 	if (isCorrectConfigFile(configFilename, reader, root))
 	{
-		std::vector<std::pair<utils::GemType, int>> objectiveGems;
+		std::vector<std::pair<utils::PieceType, int>> objectiveGems;
 		for (std::size_t i = 0; i < root["objectives"].size(); ++i)
 		{
-			std::string gemType = root["objectives"][(int)i][0].asString();
+			std::string PieceType = root["objectives"][(int)i][0].asString();
 			int count = root["objectives"][(int)i][1].asInt();
-			objectiveGems.push_back({ utils::getGemType(gemType), count });
+			objectiveGems.push_back({ utils::getPieceType(PieceType), count });
 		}
-		this->_objectives = new Objectives(objectiveGems);
+		this->_objectives = std::make_unique<Objectives>(objectiveGems);
 	}
 }
 
 GameController::~GameController()
 {
-	delete this->_app;
-	delete this->_grid;
-	delete this->_objectives;
-	delete this->_turns;
-	delete this->_gameOverWindow;
+	//delete this->_app;
+	//delete this->_grid;
+	//delete this->_objectives;
+	//delete this->_turns;
+	//delete this->_gameOverWindow;
 }
 
 bool GameController::isCorrectConfigFile(const std::string & configFilename, Json::Reader & reader, Json::Value & root)
@@ -76,7 +76,7 @@ bool GameController::isCorrectConfigFile(const std::string & configFilename, Jso
 			{
 				return false;
 			}
-			std::vector<utils::GemType> objectiveGems;
+			std::vector<utils::PieceType> objectiveGems;
 			for (std::size_t i = 0; i < root["objectives"].size(); ++i)
 			{
 				if (root["objectives"][(int)i][0].isString() == false
@@ -86,11 +86,11 @@ bool GameController::isCorrectConfigFile(const std::string & configFilename, Jso
 					return false;
 				}
 				std::string type = root["objectives"][(int)i][0].asString();
-				objectiveGems.push_back(utils::getGemType(type));
+				objectiveGems.push_back(utils::getPieceType(type));
 			}
 			for (int i = 0; i < objectiveGems.size(); ++i)
 			{
-				if (objectiveGems[i] == utils::GemType::UNKNOWN)
+				if (objectiveGems[i] == utils::PieceType::UNKNOWN)
 				{
 					return false;
 				}
@@ -182,10 +182,10 @@ void GameController::run()
 void GameController::initialize(const std::string & configFilename)
 {
 	parseConfigFile(configFilename);
-	this->_grid = new GameGrid(configFilename, this->_objectives->getObjectives());
-	this->_turns = new Turns(configFilename);
-	this->_gameOverWindow = new GameOverWindow();
-	this->_app = new sf::RenderWindow(sf::VideoMode(utils::WINDOW_WIDTH, utils::WINDOW_HEIGHT), "Match3Game", sf::Style::Close);
+	this->_grid = std::make_unique<GameGrid>(configFilename, this->_objectives->getObjectives());
+	this->_turns = std::make_unique<Turns>(configFilename);
+	this->_gameOverWindow = std::make_unique<GameOverWindow>();
+	this->_app = std::make_unique<sf::RenderWindow>(sf::VideoMode(utils::WINDOW_WIDTH, utils::WINDOW_HEIGHT), "Match3Game", sf::Style::Close);
 	this->_app->setFramerateLimit(utils::MAX_FRAMERATE_LIMIT);
 }
 
@@ -199,7 +199,7 @@ void GameController::updateClickedGems()
 	std::cout << "updating clickedGems\n";
 	std::cout << "click: " << this->_clickCount << " " << currentGem.x << " " << currentGem.y << "\n";
 
-	if (currentGem.x < 0 || currentGem.y < 0 || currentGem.y >= this->_grid->getRows() || currentGem.x >= this->_grid->getColumns())
+	if (currentGem.x < 0 || currentGem.y < 0 || currentGem.x >= this->_grid->getRows() || currentGem.y >= this->_grid->getColumns())
 	{
 		--this->_clickCount;
 		return;

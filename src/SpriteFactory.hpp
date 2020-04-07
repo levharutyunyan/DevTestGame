@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "utils.hpp"
-#include "Gem.hpp"
+#include "Piece.hpp"
 // #include "PowerUp.hpp"
 //struct Gem;
 //struct Tile;
@@ -16,13 +16,13 @@
 class SpriteFactory
 {
 private:
-	using Gems = std::vector<Gem>;
+	using Gems = std::vector<Piece>;
 	using Tiles = std::vector<Tile>;
 	//using PowerUps = std::vector<PowerUp>;
 public:
 	SpriteFactory();
 
-	Gem* getGem(utils::GemType gemType);
+	Piece* getGem(utils::PieceType PieceType);
 	//Tile* getTile(utils::TileType tileType);
 	//PowerUp* getPowerUp(utils::PowerUpType poweUp);
 

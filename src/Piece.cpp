@@ -1,14 +1,14 @@
-#include "Gem.hpp"
+#include "Piece.hpp"
 
-Gem::Gem(int width = utils::GEM_WIDTH, int height = utils::GEM_HEIGHT)
+Piece::Piece(int width = utils::GEM_WIDTH, int height = utils::GEM_HEIGHT)
 	: _width(width)
 	, _height(height)
 {
 }
-Gem::Gem()
-	: Gem(utils::GEM_WIDTH, utils::GEM_HEIGHT)
+Piece::Piece()
+	: Piece(utils::GEM_WIDTH, utils::GEM_HEIGHT)
 {}
-void Gem::setImage(const std::string & image_filename)
+void Piece::setImage(const std::string & image_filename)
 {
 	this->_filename = image_filename;
 	this->_image.loadFromFile(image_filename);
@@ -18,26 +18,26 @@ void Gem::setImage(const std::string & image_filename)
 		static_cast<float>(this->_height) / this->_image.getSize().y);
 }
 
-void Gem::draw(sf::RenderTarget & target, sf::RenderStates states) const
+void Piece::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	states.transform *= getTransform();
 	target.draw(this->_sprite, states);
 }
 
-utils::GemType Gem::getGemType()
+utils::PieceType Piece::getPieceType()
 {
-	if (this->_filename == utils::RED_GEM_FILENAME) { return utils::GemType::RED; }
-	if (this->_filename == utils::ORANGE_GEM_FILENAME) { return utils::GemType::ORANGE; }
-	if (this->_filename == utils::GREEN_GEM_FILENAME) { return utils::GemType::GREEN; }
-	if (this->_filename == utils::BLUE_GEM_FILENAME) { return utils::GemType::BLUE; }
-	if (this->_filename == utils::VIOLET_GEM_FILENAME) { return utils::GemType::VIOLET; }
+	if (this->_filename == utils::RED_GEM_FILENAME) { return utils::PieceType::RED; }
+	if (this->_filename == utils::ORANGE_GEM_FILENAME) { return utils::PieceType::ORANGE; }
+	if (this->_filename == utils::GREEN_GEM_FILENAME) { return utils::PieceType::GREEN; }
+	if (this->_filename == utils::BLUE_GEM_FILENAME) { return utils::PieceType::BLUE; }
+	if (this->_filename == utils::VIOLET_GEM_FILENAME) { return utils::PieceType::VIOLET; }
 	
-	return utils::GemType::UNKNOWN;
+	return utils::PieceType::UNKNOWN;
 }
 
-std::string Gem::randomGemFilename(const std::vector<std::pair<utils::GemType, int>>& objs, int figures_colors_count)
+std::string Piece::randomGemFilename(const std::vector<std::pair<utils::PieceType, int>>& objs, int figures_colors_count)
 {
-	static std::vector<utils::GemType> gems;
+	static std::vector<utils::PieceType> gems;
 
 	// On initialization
 	if (gems.empty())
@@ -47,25 +47,25 @@ std::string Gem::randomGemFilename(const std::vector<std::pair<utils::GemType, i
 		{
 			gems[i] = objs[i].first;
 		}
-		std::vector<utils::GemType> all_gem_types = utils::ALL_GEM_TYPES_VECTOR;
+		std::vector<utils::PieceType> all_gem_types = utils::ALL_GEM_TYPES_VECTOR;
 		for (int i = 0; i < gems.size(); ++i)
 		{
 			all_gem_types.erase(std::remove(all_gem_types.begin(), all_gem_types.end(), gems[i]), all_gem_types.end());
 		}
 		for (std::size_t i = gems.size(); i < figures_colors_count; ++i)
 		{
-			utils::GemType tmp_gem = all_gem_types[rand() % all_gem_types.size()];
+			utils::PieceType tmp_gem = all_gem_types[rand() % all_gem_types.size()];
 			all_gem_types.erase(std::remove(all_gem_types.begin(), all_gem_types.end(), tmp_gem), all_gem_types.end());
 			gems.push_back(tmp_gem);
 		}
 	}
 
 	//Gem gem;
-	utils::GemType random_gem_type = gems[rand() % gems.size()];
+	utils::PieceType random_gem_type = gems[rand() % gems.size()];
 	return utils::getGemImageFilename(random_gem_type);
 }
 
-char Gem::getShortFilename() const
+char Piece::getShortFilename() const
 {
 	if (this->_filename == utils::RED_GEM_FILENAME) { return 'r'; }
 	if (this->_filename == utils::ORANGE_GEM_FILENAME) { return 'o'; }
@@ -74,7 +74,7 @@ char Gem::getShortFilename() const
 	if (this->_filename == utils::VIOLET_GEM_FILENAME) { return 'v'; }
 }
 
-void swap(Gem & lhs, Gem & rhs)
+void swap(Piece & lhs, Piece & rhs)
 {
 	using std::swap; 
 	

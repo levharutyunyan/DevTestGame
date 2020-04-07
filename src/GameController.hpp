@@ -26,11 +26,11 @@ public :
 	void startGame();
 private:
     GameStatus _gameStatus;
-	sf::RenderWindow *_app;
-	GameGrid *_grid;
-	Objectives *_objectives;
-	Turns *_turns;
-	GameOverWindow *_gameOverWindow;
+	std::unique_ptr<sf::RenderWindow> _app;
+	std::unique_ptr<GameGrid> _grid;
+	std::unique_ptr<Objectives> _objectives;
+	std::unique_ptr<Turns> _turns;
+	std::unique_ptr<GameOverWindow> _gameOverWindow;
 
 	sf::Vector2i _mouse_pos;
 	int _clickCount;

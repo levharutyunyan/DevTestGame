@@ -52,13 +52,14 @@ namespace utils
 
 	static const sf::Vector2i NULL_POS(-1, -1);
 
-	enum class GemType : int
+	enum class PieceType : int
 	{
-		RED = 0, ORANGE = 1, GREEN = 2, BLUE = 3, VIOLET = 4, UNKNOWN = 5
+		RED = 0, ORANGE = 1, GREEN = 2, BLUE = 3, VIOLET = 4, UNKNOWN = 5,
+
 	};
-	static const std::vector<GemType> ALL_GEM_TYPES_VECTOR
+	static const std::vector<PieceType> ALL_GEM_TYPES_VECTOR
 	{ 
-		GemType::RED, GemType::ORANGE, GemType::GREEN, GemType::BLUE, GemType::VIOLET
+		PieceType::RED, PieceType::ORANGE, PieceType::GREEN, PieceType::BLUE, PieceType::VIOLET
 	};
 	
 	enum class TileType : int
@@ -141,8 +142,8 @@ namespace utils
 	static const std::string GAME_OVER_LOSE_TEXT("Game Failed");
 	
 	// functions
-	std::string getGemImageFilename(GemType gemType);
-	GemType getGemType(const std::string& gemName);
+	std::string getGemImageFilename(PieceType PieceType);
+	PieceType getPieceType(const std::string& gemName);
 	//void printPattern(const Pattern& pattern);
 	bool isValidPattern(const Pattern& pattern);
 }

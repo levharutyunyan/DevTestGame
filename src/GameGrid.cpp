@@ -2,7 +2,7 @@
 #include <iostream>
 
 GameGrid::GameGrid(const std::string& json_filename,
-		const std::vector<std::pair<utils::GemType, int>>& objectives)
+		const std::vector<std::pair<utils::PieceType, int>>& objectives)
 	: _gridXPos(utils::GRID_Y_POS)
 	, _gridYPos(utils::GRID_X_POS)
 	, _rows(-1)
@@ -94,13 +94,13 @@ void GameGrid::fillTiles()
 
 void GameGrid::fillGems()
 {
-	this->_gems.resize(this->_rows, std::vector<Gem>(this->_columns));
+	this->_gems.resize(this->_rows, std::vector<Piece>(this->_columns));
 
 	for (int i = 0; i < this->_gems.size(); ++i)
 	{
 		for (int j = 0; j < this->_gems[i].size(); ++j)
 		{
-			this->_gems[i][j].setImage(Gem::randomGemFilename(this->_objectives, this->_figuresColorCount));
+			this->_gems[i][j].setImage(Piece::randomGemFilename(this->_objectives, this->_figuresColorCount));
 			this->_gems[i][j].setPosition(static_cast<float>(this->_gridYPos + utils::TILE_HEIGHT * j + 5),
 				static_cast<float>(this->_gridXPos + utils::TILE_WIDTH * i + 5));
 		
@@ -124,7 +124,7 @@ bool GameGrid::swapGems(const utils::GemPair& gemPair)
 	
 	utils::Pattern lhsPosPattern = checkForMatch(gemPair.first);
 	utils::Pattern rhsPosPattern = checkForMatch(gemPair.second);
-	if(lhsPosPattern == utils::NULL_PATTERN && rhsPosPattern != utils::NULL_PATTERN)
+	if(lhsPosPattern == utils::NULL_PATTERN && rhsPosPattern == utils::NULL_PATTERN)
 	{
 		this->_isSuccessfulTurn = false;
 		swap(this->_gems[gemPair.first.x][gemPair.first.y], this->_gems[gemPair.second.x][gemPair.second.y]);
@@ -232,7 +232,7 @@ utils::Pattern GameGrid::checkForMatch(const sf::Vector2i & position)
 //	this->_gridStatus = GridStatus::SWAPPING;
 //}
 
-std::vector<std::pair<utils::GemType, int>> GameGrid::getUpdatedObjectives() const
+std::vector<std::pair<utils::PieceType, int>> GameGrid::getUpdatedObjectives() const
 {
 	return this->_objectives;
 }
@@ -339,7 +339,7 @@ void GameGrid::checkColumn(int columnIndex)
 		for(auto& it: tmpPattern)
 		{
 			this->_affectedGems[it.x][it.y] = true;
-			updateObjectives(this->_gems[it.x][it.y].getGemType());
+			updateObjectives(this->_gems[it.x][it.y].getPieceType());
 		}
 	}
 }
@@ -379,10 +379,10 @@ void GameGrid::checkAffectedColumns()
 	}
 }
 
-void GameGrid::updateObjectives(utils::GemType gemType)
+void GameGrid::updateObjectives(utils::PieceType PieceType)
 {
 	/*auto found = std::find_if(this->_objectives.begin(), this->_objectives.end(), 
-	[&gemType](auto a)
+	[&PieceType](auto a)
 	{
 		return (int)a.second == (int)type;
 	});
@@ -393,7 +393,7 @@ void GameGrid::updateObjectives(utils::GemType gemType)
 
 	for (int i = 0; i < this->_objectives.size(); ++i)
 	{
-		if (this->_objectives[i].first == gemType)
+		if (this->_objectives[i].first == PieceType)
 		{
 			this->_objectives[i].second--;
 			break;
@@ -411,7 +411,7 @@ void GameGrid::deleteAffectedGems()
 			{
 				if(this->_affectedGems[i][j] == true)
 				{
-					updateObjectives(this->_gems[i][j].getGemType());				
+					updateObjectives(this->_gems[i][j].getPieceType());				
 				}
 			}
 		}
@@ -458,7 +458,7 @@ void GameGrid::generateNewGems()
 			int initPos = 0;
 			while (this->_affectedGems[initPos][i] == true)
 			{
-				this->_gems[initPos][i].setImage(Gem::randomGemFilename(this->_objectives, this->_figuresColorCount));
+				this->_gems[initPos][i].setImage(Piece::randomGemFilename(this->_objectives, this->_figuresColorCount));
 				this->_affectedGems[initPos][i] = false;
 				++initPos;
 			}

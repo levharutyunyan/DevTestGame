@@ -5,22 +5,22 @@
 #include <vector>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
-#include "Gem.hpp"
+#include "Piece.hpp"
 #include "utils.hpp"
 
 class Objectives : public sf::Drawable, public sf::Transformable
 {
 public:
 	Objectives();
-	Objectives(const std::vector<std::pair<utils::GemType, int>>& objectives);
+	Objectives(const std::vector<std::pair<utils::PieceType, int>>& objectives);
 	
-	void updateObjectives(const std::vector<std::pair<utils::GemType, int>>& objectives);
+	void updateObjectives(const std::vector<std::pair<utils::PieceType, int>>& objectives);
 	bool areObjectivesLeft() const;
-	std::vector<std::pair<utils::GemType, int>> getObjectives() const;
+	std::vector<std::pair<utils::PieceType, int>> getObjectives() const;
 
 private:
-	std::vector<std::pair<utils::GemType, int>> _objectives;
-	std::vector<std::pair<Gem, sf::Text>> _gems;
+	std::vector<std::pair<utils::PieceType, int>> _objectives;
+	std::vector<std::pair<Piece, sf::Text>> _gems;
 
 	float _objectivesXPos;
 	float _objectivesYPos;
