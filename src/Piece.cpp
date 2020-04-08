@@ -65,6 +65,7 @@ char Piece::getShortFilename() const
 	if (this->_filename == utils::VIOLET_GEM_FILENAME) { return 'v'; }
 	if (this->_filename == utils::NONE_GEM_FILENAME) { return 'n'; }
 	if (this->_filename == utils::UNKNOWN_GEM_FILENAME) { return 'u'; }
+	return 'x';
 }
 
 void swap(Piece & lhs, Piece & rhs)

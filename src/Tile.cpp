@@ -15,10 +15,46 @@ utils::TileType Tile::getTileType() const
 {
 	return this->_tileType;
 }
+void Tile::setTexture(utils::TileType type)
+{
+	//this->_tileType = type;
+	setImage(utils::getTileImageFilename(type));
+}
 void Tile::setTileType(utils::TileType type)
 {
 	this->_tileType = type;
-	setImage(utils::getTileImageFilename(type));
+}
+void Tile::resetTexture()
+{
+	setTexture(this->_tileType);
+}
+void Tile::turnOnAffected()
+{
+	setTexture(utils::TileType::AFFECTED_TILE);
+}
+void Tile::toggleSelected()
+{
+	this->_isSelected = !this->_isSelected;
+	if (this->_isSelected)
+	{
+		setTexture(utils::TileType::SELECTED_TILE);
+	}
+	else
+	{
+		reset();
+	}
+}
+void Tile::reset()
+{
+	setTexture(this->_tileType);
+}
+int Tile::width() const
+{
+	return this->_width;
+}
+int Tile::height() const
+{
+	return this->_height;
 }
 void Tile::setImage(const std::string& image_filename)
 {

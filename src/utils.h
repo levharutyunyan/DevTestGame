@@ -91,11 +91,11 @@ namespace utils
 	};
 	using Pattern = std::vector<sf::Vector2i>;
 	static const Pattern NULL_PATTERN{};
-	static const std::vector<sf::Vector2i> H_PATTERN_DIR{ { -1, 0 }, { 1, 0 } };
-	static const std::vector<sf::Vector2i> V_PATTERN_DIR{ { 0, -1 }, { 0, 1 } };
+	static const std::vector<sf::Vector2i> H_PATTERN_DIR{ { 0, -1 }, { 0, 1 } };
+	static const std::vector<sf::Vector2i> V_PATTERN_DIR{ { -1, 0 }, { 1, 0 } };
 	static const std::vector<sf::Vector2i> DIAG_PATTERN_DIR{ { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
-	static const std::vector<sf::Vector2i> H_DIAG_PATTERN_DIR{ { -1, 0 }, { 1, 0 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
-	static const std::vector<sf::Vector2i> V_DIAG_PATTERN_DIR{ { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+	static const std::vector<sf::Vector2i> H_DIAG_PATTERN_DIR{ { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+	static const std::vector<sf::Vector2i> V_DIAG_PATTERN_DIR{ { -1, 0 }, { 1, 0 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
 	static const std::vector<sf::Vector2i> ALL_PATTERN_DIR{ { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
 	// Filenames for resources
 	static const std::string CONFIG_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/src/config.json");

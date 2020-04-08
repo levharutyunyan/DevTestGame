@@ -42,14 +42,14 @@ public:
 	bool swapGems(const utils::GemPair& gemPair);
 	
 	//Grid status == WAITING
-	//void setGemPair(const utils::GemPair& gemPair);
 	std::vector<std::pair<utils::PieceType, int>> getUpdatedObjectives() const;
-	
+	void toggleTile(sf::Vector2i pos);
 	GridStatus getStatus() const;
 	void setStatus(GridStatus status);
 	void printPattern(const utils::Pattern& pattern) const;
 	int getRows() const;
 	int getColumns() const;
+	
 	bool getTurnResult() const;
 private:
 	// bool isCorrectJsonFile(const std::string& json_filename,
@@ -59,14 +59,15 @@ private:
 	void fillTiles();
 	void fillGems();
 	void clearMarked() const;
-
 private:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	void setAffected(const utils::Pattern& pattern);
 
-private:
 	//Bombs
+public:
+	bool isBomb(sf::Vector2i pos) const;
 	void detonateBomb(sf::Vector2i position);
+private:
 	void detonate(sf::Vector2i position, const std::vector<sf::Vector2i>& direction);
 
 private:
@@ -80,7 +81,7 @@ private:
 	void searchByDirection(sf::Vector2i position, utils::Pattern& pattern, const sf::Vector2i& direction);
 private:
 	// Grid status == CHECKING
-	utils::Pattern checkForMatch(const sf::Vector2i& position);
+	//utils::Pattern findPattern(const sf::Vector2i& position);
 	void checkColumn(int columnIndex);
 	bool updateAffectedColumns();
 	void checkAffectedColumns();

@@ -199,7 +199,8 @@ void GameController::updateClickedGems()
 	std::cout << "updating clickedGems\n";
 	std::cout << "click: " << this->_clickCount << " " << currentGem.x << " " << currentGem.y << "\n";
 
-	if (currentGem.x < 0 || currentGem.y < 0 || currentGem.x >= this->_grid->getRows() || currentGem.y >= this->_grid->getColumns())
+	if (currentGem.x < 0 || currentGem.x >= this->_grid->getRows() 
+		|| currentGem.y < 0 || currentGem.y >= this->_grid->getColumns())
 	{
 		--this->_clickCount;
 		return;
@@ -207,19 +208,30 @@ void GameController::updateClickedGems()
 	if (this->_clickCount == 1)
 	{
 		this->_clickedGems.first = currentGem;
+		this->_grid->toggleTile(currentGem);
+		if (this->_grid->isBomb(currentGem) == true)
+		{
+			this->_grid->detonateBomb(currentGem);
+			this->_grid->setStatus(GridStatus::CHECKING);
+		}
 	}
 	else if (this->_clickCount == 2)
 	{
 		this->_clickedGems.second = currentGem;
-		if (std::abs(this->_clickedGems.first.x - this->_clickedGems.second.x) + std::abs(this->_clickedGems.first.y - this->_clickedGems.second.y) != 1)
+		this->_grid->toggleTile(currentGem);
+		
+		if (std::abs(this->_clickedGems.first.x - this->_clickedGems.second.x) + std::abs(this->_clickedGems.first.y - this->_clickedGems.second.y) == 1
+			&& this->_grid->isBomb(currentGem) != true)
 		{
-			this->_clickedGems = utils::NULL_GEM_PAIR;
+			bool isSuccessfuTurn = this->_grid->swapGems(this->_clickedGems);
+			if (isSuccessfuTurn)
+			{
+				this->_turns->updateTurns();
+			}
 		}
-		bool isSuccessfuTurn = this->_grid->swapGems(this->_clickedGems);
-		if (isSuccessfuTurn)
-		{
-			this->_turns->updateTurns();
-		}
+		this->_grid->toggleTile(this->_clickedGems.first);
+		this->_grid->toggleTile(this->_clickedGems.second);
+		this->_clickedGems = utils::NULL_GEM_PAIR;
 		this->_clickCount -= 2;
 	}
 }
