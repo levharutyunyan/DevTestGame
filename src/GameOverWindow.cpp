@@ -1,4 +1,4 @@
-#include "GameOverWindow.hpp"
+#include "GameOverWindow.h"
 
 
 GameOverWindow::GameOverWindow()

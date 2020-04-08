@@ -14,7 +14,7 @@ include_directories(${SFML_INCLUDE_DIR})
 
 
 if(${SFML_FOUND}) 
-    file(GLOB srcs src/*.h src/*.cpp src/*.hpp)
+    file(GLOB srcs src/*.h src/*.cpp src/*.h)
     add_executable(${TARGET_NAME} ${srcs})
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME})
 

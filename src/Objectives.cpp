@@ -1,4 +1,4 @@
-#include "Objectives.hpp"
+#include "Objectives.h"
 
 	//float _objectivesXPos;
 	//float _objectivesYPos;
@@ -36,7 +36,7 @@ Objectives::Objectives(const std::vector<std::pair<utils::PieceType, int>>& obje
 	for(int i = 0; i < this->_objectives.size(); ++i)
 	{
 		// std::string getGemImageFilename(PieceType gem_type);
-		this->_gems[i].first.setImage(getGemImageFilename(this->_objectives[i].first));		
+		this->_gems[i].first.setImage(this->_objectives[i].first);		
 		this->_gems[i].first.setPosition(this->_shape.getPosition().x + utils::OBJECTIVES_OFFSET.y + utils::OBJECTIVES_OFFSET.x * i, this->_shape.getPosition().y + utils::OBJECTIVES_OFFSET.y);
 		this->_gems[i].second.setFont(this->_textFont);
 		this->_gems[i].second.setCharacterSize(utils::OBJECTIVES_FONT_SIZE);

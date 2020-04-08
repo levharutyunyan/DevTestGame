@@ -1,4 +1,4 @@
-#include "Turns.hpp"
+#include "Turns.h"
 
 Turns::Turns(const std::string& config_file)
 	: _turnsXPos(utils::TURNS_X_POS)

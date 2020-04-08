@@ -1,4 +1,4 @@
-#include "Tile.hpp"
+#include "Tile.h"
 
 
 Tile::Tile(int width = utils::TILE_WIDTH, int height = utils::TILE_HEIGHT)
@@ -10,6 +10,16 @@ Tile::Tile(int width = utils::TILE_WIDTH, int height = utils::TILE_HEIGHT)
 Tile::Tile()
 	: Tile(utils::TILE_WIDTH, utils::TILE_HEIGHT)
 {}
+
+utils::TileType Tile::getTileType() const
+{
+	return this->_tileType;
+}
+void Tile::setTileType(utils::TileType type)
+{
+	this->_tileType = type;
+	setImage(utils::getTileImageFilename(type));
+}
 void Tile::setImage(const std::string& image_filename)
 {
 	this->_image.loadFromFile(image_filename);

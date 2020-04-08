@@ -47,75 +47,75 @@ namespace utils
 	static const float GAME_OVER_WINDOW_X_POS = (WINDOW_WIDTH - GAME_OVER_WINDOW_WIDTH) / 2;
 	static const float GAME_OVER_WINDOW_Y_POS = (WINDOW_HEIGHT - GAME_OVER_WINDOW_HEIGHT) / 2;
 	
-
 	static const int MAX_FRAMERATE_LIMIT = 60;
 
 	static const sf::Vector2i NULL_POS(-1, -1);
 
+	static const int MINIMUM_GEMS_COUNT = 0;
+	static const int MAXIMUM_GEMS_COUNT = 100;
+	static const int MINIMUM_BOMBS_COUNT = 100;
+	static const int MAXIMUM_BOMBS_COUNT = 200;
 	enum class PieceType : int
 	{
-		RED = 0, ORANGE = 1, GREEN = 2, BLUE = 3, VIOLET = 4, UNKNOWN = 5,
+		RED = 0, ORANGE = 1, GREEN = 2, BLUE = 3, VIOLET = 4,
+		H_BOMB = MINIMUM_BOMBS_COUNT + 1, V_BOMB = MINIMUM_BOMBS_COUNT + 2, R_BOMB = MINIMUM_BOMBS_COUNT + 3,
+		UNKNOWN = 1000, NONE = 1001,
 
 	};
-	static const std::vector<PieceType> ALL_GEM_TYPES_VECTOR
+	static const std::vector<PieceType> ALL_PIECE_TYPES_VECTOR
 	{ 
-		PieceType::RED, PieceType::ORANGE, PieceType::GREEN, PieceType::BLUE, PieceType::VIOLET
+		PieceType::RED, PieceType::ORANGE, PieceType::GREEN, PieceType::BLUE, PieceType::VIOLET, 
+		PieceType::H_BOMB, PieceType::V_BOMB, PieceType::R_BOMB
 	};
 	
 	enum class TileType : int
 	{
-		GreyTile = 0, WhiteTile = 1
+		GREY_TILE = 0, WHITE_TILE = 1, AFFECTED_TILE = 2, SELECTED_TILE = 3
 	};
 
-	static const std::vector<TileType> ALL_TILES_TYPES_VECTOR
+	static const std::vector<TileType> ALL_TILE_TYPES_VECTOR
 	{ 
-		TileType::GreyTile, TileType::WhiteTile
-	};
-
-	enum class PowerUpType : int
-	{
-		H_BOMB = 0, V_BOMB = 1, R_BOMB = 2
-	};
-
-	static const std::vector<PowerUpType> ALL_POWER_UPS_TYPES_VECTOR
-	{
-		PowerUpType::H_BOMB, PowerUpType::V_BOMB, PowerUpType::R_BOMB
+		TileType::GREY_TILE, TileType::WHITE_TILE, TileType::AFFECTED_TILE, TileType::SELECTED_TILE
 	};
 
 	using GemPair = std::pair<sf::Vector2i, sf::Vector2i>;
 	static const GemPair NULL_GEM_PAIR{{-1, -1}, {-1, -1}};
 
+	enum class PatternType : int
+	{
+		NONE = 0, MATCH = 1, H_BOMB = 2, V_BOMB = 3, R_BOMB = 4
+	};
+	static const std::vector<PatternType> ALL_PATTERN_TYPES_VECTOR
+	{
+		PatternType::NONE, PatternType::MATCH, PatternType::H_BOMB, PatternType::V_BOMB, PatternType::R_BOMB
+	};
 	using Pattern = std::vector<sf::Vector2i>;
 	static const Pattern NULL_PATTERN{};
-	
-	// static std::vector<Pattern> POSSIBLE_PATTERNS
-	// {
-	// 	//Vertical pattenrs
-	// 	{{-2, 0}, {-1, 0}, {0, 0}},
-	// 	{{-1, 0}, {0, 0}, {1, 0}},
-	// 	{{0, 0}, {1, 0}, {2, 0}},
-	// 	//Horizontal patterns
-	// 	{{0, -2}, {0, -1}, {0, 0}},
-	// 	{{0, -2}, {0, -1}, {0, 0}},
-	// 	{{0, -2}, {0, -1}, {0, 0}},
-	// 	{{-1, 0}, {-1, 0}, {0, 0}, {1, 0}},
-	// };
-
-	
-
+	static const std::vector<sf::Vector2i> H_PATTERN_DIR{ { -1, 0 }, { 1, 0 } };
+	static const std::vector<sf::Vector2i> V_PATTERN_DIR{ { 0, -1 }, { 0, 1 } };
+	static const std::vector<sf::Vector2i> DIAG_PATTERN_DIR{ { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+	static const std::vector<sf::Vector2i> H_DIAG_PATTERN_DIR{ { -1, 0 }, { 1, 0 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+	static const std::vector<sf::Vector2i> V_DIAG_PATTERN_DIR{ { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+	static const std::vector<sf::Vector2i> ALL_PATTERN_DIR{ { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
 	// Filenames for resources
 	static const std::string CONFIG_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/src/config.json");
 
-	static const std::string GREY_TILE_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/tile_1.png");
-	static const std::string WHITE_TILE_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/tile_2.png");
-	//static const std::string GRID_BACKGROUND_FILENAME("C:/Users/Levonog/Desktop/images/background.jpg");
+	static const std::string GREY_TILE_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/grey_tile.png");
+	static const std::string WHITE_TILE_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/white_tile.png");
+	static const std::string SELECTED_TILE_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/selected_tile.png");
+	static const std::string AFFECTED_TILE_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/affected_tile.png");
 	// Gems
+	static const std::string NONE_GEM_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/none.png");
+	static const std::string UNKNOWN_GEM_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/unknown.png");
 	static const std::string RED_GEM_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/red.png");
 	static const std::string ORANGE_GEM_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/orange.png");
 	static const std::string GREEN_GEM_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/green.png");
 	static const std::string BLUE_GEM_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/blue.png");
 	static const std::string VIOLET_GEM_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/violet.png");
-
+	//BOMBS
+	static const std::string H_BOMB_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/h_bomb.png");
+	static const std::string V_BOMB_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/v_bomb.png");
+	static const std::string R_BOMB_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/resources/bomb.png");
 
 
 	static const sf::Color GAME_CONTROLLER_COLOR(50, 71, 76, 255);
@@ -142,9 +142,11 @@ namespace utils
 	static const std::string GAME_OVER_LOSE_TEXT("Game Failed");
 	
 	// functions
-	std::string getGemImageFilename(PieceType PieceType);
+	PieceType randomGemType(const std::vector<std::pair<utils::PieceType, int>>& objs, int figures_colors_count);
+	std::string getPieceImageFilename(PieceType pieceType);
+	PieceType toPieceType(PatternType patternType);
+	std::string getTileImageFilename(TileType pieceType);
 	PieceType getPieceType(const std::string& gemName);
-	//void printPattern(const Pattern& pattern);
 	bool isValidPattern(const Pattern& pattern);
 }
 

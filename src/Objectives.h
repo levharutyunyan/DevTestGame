@@ -5,8 +5,8 @@
 #include <vector>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
-#include "Piece.hpp"
-#include "utils.hpp"
+#include "Piece.h"
+#include "utils.h"
 
 class Objectives : public sf::Drawable, public sf::Transformable
 {

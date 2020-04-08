@@ -2,7 +2,7 @@
 #define __TILE_HPP__
 
 #include <SFML/Graphics.hpp>
-#include "utils.hpp"
+#include "utils.h"
 
 struct Tile : public sf::Drawable, public sf::Transformable
 {
@@ -11,10 +11,13 @@ struct Tile : public sf::Drawable, public sf::Transformable
 	sf::Image _image;
 	sf::Texture _texture;
 	sf::Sprite _sprite;
-
+	utils::TileType _tileType;
 	Tile(int width, int height);
 	Tile();
 	
+	utils::TileType getTileType() const;
+	void setTileType(utils::TileType type);
+private:
 	void setImage(const std::string& image);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

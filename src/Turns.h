@@ -4,7 +4,7 @@
 #include <fstream>
 #include <SFML/Graphics.hpp>
 #include "json/json.h"
-#include "utils.hpp"
+#include "utils.h"
 
 class Turns : public sf::Drawable, public sf::Transformable
 {

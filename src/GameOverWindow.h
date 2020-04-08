@@ -2,7 +2,7 @@
 #define __GAME_OVER_WINDOW_HPP__
 
 #include <SFML/Graphics.hpp>
-#include "utils.hpp"
+#include "utils.h"
 
 class GameOverWindow : public sf::Drawable, public sf::Transformable
 {

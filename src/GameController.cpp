@@ -1,5 +1,5 @@
-#include "GameController.hpp"
-//#include "utils.hpp"
+#include "GameController.h"
+//#include "utils.h"
 
 GameController::GameController()
 	: _gameStatus(GameStatus::Playing)

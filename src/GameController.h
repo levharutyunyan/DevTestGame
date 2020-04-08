@@ -6,11 +6,11 @@
 #include <algorithm>
 #include <memory>
 #include <SFML/Graphics.hpp>
-#include "GameGrid.hpp"
-#include "Objectives.hpp"
-#include "Turns.hpp"
-#include "GameOverWindow.hpp"
-#include "utils.hpp"
+#include "GameGrid.h"
+#include "Objectives.h"
+#include "Turns.h"
+#include "GameOverWindow.h"
+#include "utils.h"
 
 enum GameStatus {
     Playing,
