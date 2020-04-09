@@ -75,10 +75,13 @@ private:
 	utils::Pattern findPattern(sf::Vector2i position);
 	utils::PatternType findHorizontalPattern(sf::Vector2i position, utils::Pattern& pattern) const;
 	utils::PatternType findVerticalPattern(sf::Vector2i position, utils::Pattern& pattern) const;
-	utils::PatternType findBoxlPattern(sf::Vector2i position, utils::Pattern& pattern) const;
+	utils::PatternType findBoxPattern(sf::Vector2i position, utils::Pattern& pattern) const;
 	void collectPattern(sf::Vector2i position, utils::Pattern& pattern, const std::vector<sf::Vector2i>& direction) const;
 	
-	void searchByDirection(sf::Vector2i position, utils::Pattern& pattern, const sf::Vector2i& direction);
+	void shuffle();
+	bool findPossibleMatch(utils::Pattern& pattern);
+	bool findHorizontalMatch(sf::Vector2i position, utils::Pattern & pattern);
+	bool findVerticalMatch(sf::Vector2i position, utils::Pattern & pattern);
 private:
 	// Grid status == CHECKING
 	//utils::Pattern findPattern(const sf::Vector2i& position);
@@ -109,7 +112,8 @@ private:
 	GridStatus _gridStatus;
 	bool _isSuccessfulTurn;
 	std::vector<PatternFinder> _patternFinders;
-
+	sf::Clock _clock;
+	float _secondsPassed;
 	Tiles _tiles;
 	Gems _gems;
 	VectorBool _affectedGems;

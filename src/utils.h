@@ -48,7 +48,7 @@ namespace utils
 	static const float GAME_OVER_WINDOW_Y_POS = (WINDOW_HEIGHT - GAME_OVER_WINDOW_HEIGHT) / 2;
 	
 	static const int MAX_FRAMERATE_LIMIT = 60;
-
+	static const float EPSILON = 0.01;
 	static const sf::Vector2i NULL_POS(-1, -1);
 
 	static const int MINIMUM_GEMS_COUNT = 0;
@@ -93,9 +93,9 @@ namespace utils
 	static const Pattern NULL_PATTERN{};
 	static const std::vector<sf::Vector2i> H_PATTERN_DIR{ { 0, -1 }, { 0, 1 } };
 	static const std::vector<sf::Vector2i> V_PATTERN_DIR{ { -1, 0 }, { 1, 0 } };
-	static const std::vector<sf::Vector2i> DIAG_PATTERN_DIR{ { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
-	static const std::vector<sf::Vector2i> H_DIAG_PATTERN_DIR{ { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
-	static const std::vector<sf::Vector2i> V_DIAG_PATTERN_DIR{ { -1, 0 }, { 1, 0 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+	//static const std::vector<sf::Vector2i> DIAG_PATTERN_DIR{ { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+	//static const std::vector<sf::Vector2i> H_DIAG_PATTERN_DIR{ { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+	//static const std::vector<sf::Vector2i> V_DIAG_PATTERN_DIR{ { -1, 0 }, { 1, 0 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
 	static const std::vector<sf::Vector2i> ALL_PATTERN_DIR{ { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
 	// Filenames for resources
 	static const std::string CONFIG_FILENAME("C:/Users/Levonog/Documents/GitHub/DevTestGame/src/config.json");
@@ -148,6 +148,11 @@ namespace utils
 	std::string getTileImageFilename(TileType pieceType);
 	PieceType getPieceType(const std::string& gemName);
 	bool isValidPattern(const Pattern& pattern);
+	
+	struct compareVector2i
+	{
+		bool operator()(const sf::Vector2i& lhs, const sf::Vector2i& rhs);
+	};
 }
 
 #endif // __UTILS_HPP__ 

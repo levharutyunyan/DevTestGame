@@ -34,6 +34,7 @@ private:
 
 	sf::Vector2i _mouse_pos;
 	int _clickCount;
+	bool _isClicked;
 	utils::GemPair _clickedGems;
 
 	~GameController();

@@ -12,6 +12,8 @@ GameGrid::GameGrid(const std::string& json_filename,
 	, _objectives(objectives)
 	//, _gemPair(utils::NULL_GEM_PAIR)
 {
+	this->_secondsPassed = this->_clock.getElapsedTime().asSeconds();
+	
 	parseJsonFile(json_filename);
 	getGraphicsElements();
 	this->_affectedGems.resize(this->_gems.size(), std::vector<bool>(this->_gems[0].size()));
@@ -25,7 +27,7 @@ GameGrid::GameGrid(const std::string& json_filename,
 	using namespace std::placeholders;
 	this->_patternFinders.push_back(std::bind(&GameGrid::findHorizontalPattern, this, _1, _2));
 	this->_patternFinders.push_back(std::bind(&GameGrid::findVerticalPattern, this, _1, _2));
-	this->_patternFinders.push_back(std::bind(&GameGrid::findBoxlPattern, this, _1, _2));
+	this->_patternFinders.push_back(std::bind(&GameGrid::findBoxPattern, this, _1, _2));
 	
 	//this->_patternFinders.push_back(std::bind(GameGrid::findBoxlPattern, this, std::placeholders::_1))
 }
@@ -149,13 +151,13 @@ bool GameGrid::swapGems(const utils::GemPair& gemPair)
 	}
 	if (lhsPosPattern != utils::NULL_PATTERN)
 	{
-		printPattern(lhsPosPattern);
+		//printPattern(lhsPosPattern);
 		
 		setAffected(lhsPosPattern);
 	}
 	if (rhsPosPattern != utils::NULL_PATTERN)
 	{
-		printPattern(rhsPosPattern);
+		//printPattern(rhsPosPattern);
 		setAffected(rhsPosPattern);
 	}
 	std::cout << "finished swapping\n";
@@ -217,12 +219,22 @@ void GameGrid::updateStatus()
 	}
 	case GridStatus::WAITING:
 	{
-		//std::cout << "waiting\n";
-		/*if(this->_gemPair != utils::NULL_GEM_PAIR)
+		this->_secondsPassed = this->_clock.getElapsedTime().asSeconds();
+		if (this->_secondsPassed > 4)
 		{
-			this->_gridStatus = GridStatus::SWAPPING;
-			std::cout << "waiting is over\n";
-		}*/
+			std::cout << _secondsPassed << "\n";
+			_secondsPassed -= 4;
+			this->_clock.restart();
+			utils::Pattern pat;
+			bool possibleMatch = findPossibleMatch(pat);
+			if (possibleMatch != true)
+			{
+				std::cout << "shuffling\n";
+				shuffle();
+				this->_gridStatus = GridStatus::CHECKING;
+			}
+			//printPattern(pat);
+		}
 		break;
 	}
 	}
@@ -324,7 +336,7 @@ void GameGrid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			//std::cout << "drawing: " << "[ " << i << ": " << j << "] isDeleted: " << this->_affectedGems[i][j] << "\n";
 		}
 	}
-	std::cout << "current grid situation_________\n";
+	/*std::cout << "current grid situation_________\n";
 	for (int i = 0; i < this->_affectedGems.size(); ++i)
 	{
 		for (int j = 0; j < this->_affectedGems[i].size(); ++j)
@@ -333,21 +345,11 @@ void GameGrid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		}
 		std::cout << "\n";
 	}
-	std::cout << "_______________________________\n";
+	std::cout << "_______________________________\n";*/
 	//system("pause");
 	//std::cout << "drawing over\n";
 }
 
-void GameGrid::searchByDirection(sf::Vector2i position, utils::Pattern & pattern, const sf::Vector2i & direction)
-{
-	while (0 <= position.x + direction.x && position.x + direction.x < this->_gems.size()
-		&& 0 <= position.y + direction.y && position.y + direction.y < this->_gems[0].size()
-		&& this->_gems[position.x][position.y].getPieceType() == this->_gems[position.x + direction.x][position.y + direction.y].getPieceType())
-	{
-		pattern.push_back(position + direction);
-		position += direction;
-	}
-}
 
 void GameGrid::setAffected(const utils::Pattern & pattern)
 {
@@ -412,6 +414,54 @@ void GameGrid::detonate(sf::Vector2i position, const std::vector<sf::Vector2i>& 
 	}
 }
 
+//utils::Pattern GameGrid::findPattern(sf::Vector2i position)
+//{
+//	//std::map<utils::Pattern, utils::PatternType> patterns;
+//	utils::Pattern hPattern;
+//	utils::PatternType hPatternResult = findHorizontalPattern(position, hPattern);
+//	//patterns[hPattern] = hPatternResult;
+//	utils::Pattern vPattern;
+//	utils::PatternType vPatternResult = findVerticalPattern(position, vPattern);
+//	//patterns[vPattern] = vPatternResult;
+//	utils::Pattern bPattern;
+//	utils::PatternType bPatternResult = findBoxPattern(position, bPattern);
+//	//patterns[bPattern] == bPatternResult;
+//	
+//	std::vector<std::pair<utils::Pattern, utils::PatternType>> patterns;
+//	patterns.push_back({ bPattern, bPatternResult });
+//	patterns.push_back({ hPattern, hPatternResult });
+//	patterns.push_back({ vPattern, vPatternResult });
+//	/*for (int i = 0; i < this->_patternFinders.size(); ++i)
+//	{
+//		utils::Pattern pattern;
+//		utils::PatternType patternResult = this->_patternFinders[0](position, pattern);
+//		patterns.push_back({ pattern, patternResult });
+//	}*/
+//
+//	std::set<sf::Vector2i> uniques;
+//	utils::Pattern result;
+//	for (auto& it : patterns)
+//	{
+//		if (it.second != utils::PatternType::NONE && it.second != utils::PatternType::MATCH)
+//		{
+//			result = it.first;
+//
+//			this->_gems[position.x][position.y].setPieceType(utils::toPieceType(it.second));
+//			this->_gems[position.x][position.y].setImage(this->_gems[position.x][position.y].getPieceType());
+//			result.erase(std::remove(result.begin(), result.end(), position), result.end());
+//			return result;
+//		}
+//	}
+//	for (auto & it : patterns)
+//	{
+//		if (it.second == utils::PatternType::MATCH)
+//		{
+//			return it.first;
+//		}
+//	}
+//	return utils::NULL_PATTERN;
+//}
+
 utils::Pattern GameGrid::findPattern(sf::Vector2i position)
 {
 	//std::map<utils::Pattern, utils::PatternType> patterns;
@@ -422,42 +472,78 @@ utils::Pattern GameGrid::findPattern(sf::Vector2i position)
 	utils::PatternType vPatternResult = findVerticalPattern(position, vPattern);
 	//patterns[vPattern] = vPatternResult;
 	utils::Pattern bPattern;
-	utils::PatternType bPatternResult = findBoxlPattern(position, bPattern);
+	utils::PatternType bPatternResult = findBoxPattern(position, bPattern);
 	//patterns[bPattern] == bPatternResult;
-	
+
 	std::vector<std::pair<utils::Pattern, utils::PatternType>> patterns;
+	patterns.push_back({ bPattern, bPatternResult });
 	patterns.push_back({ hPattern, hPatternResult });
 	patterns.push_back({ vPattern, vPatternResult });
-	patterns.push_back({ bPattern, bPatternResult });
 	/*for (int i = 0; i < this->_patternFinders.size(); ++i)
 	{
 		utils::Pattern pattern;
 		utils::PatternType patternResult = this->_patternFinders[0](position, pattern);
 		patterns.push_back({ pattern, patternResult });
 	}*/
+	//std::cout << "___pos " << position.x << " " << position.y << "\n";
+	//std::cout << "___patterns before changes\n";
+	//std::cout << "___box\n";
+	//printPattern(bPattern);
+	//std::cout << "___box\n";
+	//printPattern(hPattern);
+	//std::cout << "___vert\n";
+	//printPattern(vPattern);
+	//std::cout << "____________________\n";
 
 	utils::Pattern result;
+	bool hasBomb = false;
 	for (auto& it : patterns)
 	{
 		if (it.second != utils::PatternType::NONE && it.second != utils::PatternType::MATCH)
 		{
-			result = it.first;
-			//turn in bomb here
-			this->_gems[position.x][position.y].setPieceType(utils::toPieceType(it.second));
-			this->_gems[position.x][position.y].setImage(this->_gems[position.x][position.y].getPieceType());
-			result.erase(std::remove(result.begin(), result.end(), position), result.end());
-			return result;
+			for (int i = 0; i < it.first.size(); ++i)
+			{
+				result.push_back(it.first[i]);
+			}
+
+			/*if (static_cast<int>(this->_gems[position.x][position.y].getPieceType())
+				< static_cast<int>(utils::MAXIMUM_BOMBS_COUNT))
+			{*/
+			if (hasBomb == false)
+			{
+
+				this->_gems[position.x][position.y].setPieceType(utils::toPieceType(it.second));
+				//this->_gems[position.x][position.y].setImage(this->_gems[position.x][position.y].getPieceType());
+				/*result.erase(std::remove(result.begin(), result.end(), position), result.end());*/
+				hasBomb = true;
+			}
+			//}
+			//return result;
 		}
 	}
 	for (auto & it : patterns)
 	{
 		if (it.second == utils::PatternType::MATCH)
 		{
-			return it.first;
+for (int i = 0; i < it.first.size(); ++i)
+{
+	result.push_back(it.first[i]);
+}
 		}
 	}
-	return utils::NULL_PATTERN;
+	if (hasBomb == true)
+	{
+		result.erase(std::remove(result.begin(), result.end(), position), result.end());
+	}
+	/*if (result.size() != 0)
+	{
+		std::cout << "___________pattern after changes\n";
+		printPattern(result);
+		std::cout << "_________________________________\n";
+	}*/
+	return result.size() > 0 ? result : utils::NULL_PATTERN;
 }
+
 
 utils::PatternType GameGrid::findHorizontalPattern(sf::Vector2i position, utils::Pattern & pattern) const
 {
@@ -477,7 +563,7 @@ utils::PatternType GameGrid::findVerticalPattern(sf::Vector2i position, utils::P
 	return (pattern.size() > 3 ? utils::PatternType::V_BOMB : utils::PatternType::MATCH);
 }
 
-utils::PatternType GameGrid::findBoxlPattern(sf::Vector2i position, utils::Pattern & pattern) const
+utils::PatternType GameGrid::findBoxPattern(sf::Vector2i position, utils::Pattern & pattern) const
 {
 	pattern.push_back(position);
 	const std::vector<sf::Vector2i>& direction = utils::ALL_PATTERN_DIR;
@@ -501,7 +587,11 @@ utils::PatternType GameGrid::findBoxlPattern(sf::Vector2i position, utils::Patte
 		xCount.insert(it.x);
 		yCount.insert(it.y);
 	}
-	return (pattern.size() == 4 && xCount.size() == 2 && yCount.size() == 2 ? 
+	if (pattern.size() == 5 && std::abs(static_cast<int>(xCount.size()) - static_cast<int>(yCount.size())) == 1)
+	{
+		return utils::PatternType::R_BOMB;
+	}
+	return (pattern.size() == 4 && xCount.size() == 2 && yCount.size() == 2 ?
 		utils::PatternType::R_BOMB : utils::PatternType::NONE);
 }
 
@@ -520,6 +610,114 @@ void GameGrid::collectPattern(sf::Vector2i position, utils::Pattern & pattern, c
 			collectPattern(newPosition, pattern, direction);
 		}
 	}
+}
+
+void GameGrid::shuffle()
+{
+	for (int i = 0; i < this->_rows; ++i)
+	{
+		for (int j = 0; j < this->_columns; ++ j)
+		{
+			swap(this->_gems[i][j], this->_gems[rand() % this->_rows][rand() % this->_columns]);
+		}
+	}
+}
+
+bool GameGrid::findPossibleMatch(utils::Pattern & pattern)
+{
+	for (int i = 0; i < this->_rows; ++i)
+	{
+		for (int j = 0; j < this->_columns; ++j)
+		{
+			utils::Pattern pat;
+			if (findHorizontalMatch(sf::Vector2i(i, j), pat))
+			{
+				printPattern(pat);
+				pattern = pat;
+				return true;
+			}
+			pat = utils::NULL_PATTERN;
+			if (findVerticalMatch(sf::Vector2i(i, j), pat))
+			{
+				printPattern(pat);
+				pattern = pat;
+			}
+		}
+	}
+}
+
+bool GameGrid::findHorizontalMatch(sf::Vector2i position, utils::Pattern & pattern)
+{
+	pattern.push_back(position);
+	this->_markedGems[position.x][position.y] = true;
+	std::vector<sf::Vector2i> hDir = utils::H_PATTERN_DIR;
+	std::vector<sf::Vector2i> vDir = utils::V_PATTERN_DIR;
+
+	for (int i = 0; i < hDir.size(); ++i)
+	{
+		sf::Vector2i newPosition = position + hDir[i];
+		while (0 <= newPosition.x && newPosition.x < this->_rows &&
+			0 <= newPosition.y && newPosition.y < this->_columns &&
+			this->_gems[position.x][position.y].getPieceType() == this->_gems[newPosition.x][newPosition.y].getPieceType() &&
+			this->_markedGems[newPosition.x][newPosition.y] == false)
+		{
+			pattern.push_back(newPosition);
+			this->_markedGems[newPosition.x][newPosition.y] = true;
+			newPosition += hDir[i];
+		}
+		for (int j = 0; j < vDir.size(); ++j)
+		{
+			sf::Vector2i diagPos = newPosition + vDir[i];
+			if (0 <= diagPos.x && diagPos.x < this->_rows &&
+				0 <= diagPos.y && diagPos.y < this->_columns &&
+				this->_gems[position.x][position.y].getPieceType() == this->_gems[diagPos.x][diagPos.y].getPieceType() &&
+				this->_markedGems[diagPos.x][diagPos.y] == false)
+			{
+				pattern.push_back(diagPos);
+				this->_markedGems[diagPos.x][diagPos.y] = true;
+			}
+		}
+	}
+
+	clearMarked();
+	return pattern.size() >= 3;
+}
+
+bool GameGrid::findVerticalMatch(sf::Vector2i position, utils::Pattern & pattern)
+{
+	pattern.push_back(position);
+	this->_markedGems[position.x][position.y] = true;
+	std::vector<sf::Vector2i> vDir = utils::V_PATTERN_DIR;
+	std::vector<sf::Vector2i> hDir = utils::H_PATTERN_DIR;
+
+	for (int i = 0; i < vDir.size(); ++i)
+	{
+		sf::Vector2i newPosition = position + vDir[i];
+		while (0 <= newPosition.x && newPosition.x < this->_rows &&
+			0 <= newPosition.y && newPosition.y < this->_columns &&
+			this->_gems[position.x][position.y].getPieceType() == this->_gems[newPosition.x][newPosition.y].getPieceType() &&
+			this->_markedGems[newPosition.x][newPosition.y] == false)
+		{
+			pattern.push_back(newPosition);
+			this->_markedGems[newPosition.x][newPosition.y] = true;
+			newPosition += vDir[i];
+		}
+		for (int j = 0; j < hDir.size(); ++j)
+		{
+			sf::Vector2i diagPos = newPosition + hDir[i];
+			if (0 <= diagPos.x && diagPos.x < this->_rows &&
+				0 <= diagPos.y && diagPos.y < this->_columns &&
+				this->_gems[position.x][position.y].getPieceType() == this->_gems[diagPos.x][diagPos.y].getPieceType() &&
+				this->_markedGems[diagPos.x][diagPos.y] == false)
+			{
+				pattern.push_back(diagPos);
+				this->_markedGems[diagPos.x][diagPos.y] = true;
+			}
+		}
+	}
+
+	clearMarked();
+	return pattern.size() >= 3;
 }
 
 void GameGrid::checkColumn(int columnIndex)
@@ -567,7 +765,7 @@ void GameGrid::checkAffectedColumns()
 			checkColumn(i);
 		}
 	}
-	std::cout << "----check affected columns\n";
+	/*std::cout << "----check affected columns\n";
 	for (int i = 0; i < this->_affectedColumns.size(); ++i)
 	{
 		std::cout << this->_affectedColumns[i] << " ";
@@ -581,7 +779,7 @@ void GameGrid::checkAffectedColumns()
 		}
 		std::cout << "\n";
 	}
-	std::cout << "----checked/n";
+	std::cout << "----checked/n";*/
 	//system("pause");
 }
 
@@ -650,7 +848,7 @@ void GameGrid::dropAffectedColumns()
 
 void GameGrid::generateNewGems()
 {
-	std::cout << "_______current grid situation\n";
+	/*std::cout << "_______current grid situation\n";
 	for (int i = 0; i < this->_affectedGems.size(); ++i)
 	{
 		for (int j = 0; j < this->_affectedGems[i].size(); ++j)
@@ -659,7 +857,7 @@ void GameGrid::generateNewGems()
 		}
 		std::cout << "\n";
 	}
-	std::cout << "_______________________________\n";
+	std::cout << "_______________________________\n";*/
 	for (int i = 0; i < this->_affectedColumns.size(); ++i)
 	{
 		if (this->_affectedColumns[i] == true)
@@ -674,7 +872,7 @@ void GameGrid::generateNewGems()
 			}
 		}
 	}
-	std::cout << "current grid situation_________\n";
+	/*std::cout << "current grid situation_________\n";
 	for (int i = 0; i < this->_affectedGems.size(); ++i)
 	{
 		for (int j = 0; j < this->_affectedGems[i].size(); ++j)
@@ -683,6 +881,6 @@ void GameGrid::generateNewGems()
 		}
 		std::cout << "\n";
 	}
-	std::cout << "_______________________________\n";
+	std::cout << "_______________________________\n";*/
 	//system("pause");
 }

@@ -149,4 +149,17 @@ namespace utils
 
 		return x_coords.size() >= 3 || y_coords.size() >= 3;
 	}
+	
+	bool compareVector2i::operator()(const sf::Vector2i & lhs, const sf::Vector2i & rhs)
+	{
+		if ((lhs.x + lhs.y)*(lhs.x + lhs.y) < (rhs.x + rhs.y)*(rhs.x + rhs.y))
+		{
+			return false;
+		}
+		if (lhs.x < rhs.x)
+		{
+			return false;
+		}
+		return lhs.y < rhs.y;
+	}
 }
