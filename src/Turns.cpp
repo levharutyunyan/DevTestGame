@@ -32,8 +32,7 @@ Turns::Turns(const std::string& config_file)
 	bool succeeded = this->_textFont.loadFromFile(utils::TURNS_FONT_FILENAME);
 	if (!succeeded)
 	{
-		std::cout << "Can't load font\n";
-		return;
+		throw std::logic_error("Could not load font.\n");
 	}
 	this->_shape.setPosition(this->_turnsYPos, this->_turnsXPos);
 	this->_shape.setFillColor(this->_shapeColor);
@@ -42,7 +41,6 @@ Turns::Turns(const std::string& config_file)
 	this->_turns.setCharacterSize(utils::TURNS_FONT_SIZE);
 	this->_turns.setFillColor(this->_fontColor);
 	this->_turns.setString(std::to_string(this->_turnsCount));
-	//this->_turns.setPosition(this->_shape.getPosition().x + utils::TURNS_OFFSET.x, this->_shape.getPosition().y + utils::TURNS_OFFSET.y);
 	this->_turns.setPosition(this->_shape.getPosition().x + this->_shape.getSize().x / 2  - utils::TURNS_OFFSET.x,
 		this->_shape.getPosition().y + utils::TURNS_OFFSET.y);
 }

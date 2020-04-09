@@ -21,15 +21,6 @@ void Piece::setImage(utils::PieceType type)
 		static_cast<float>(this->_height) / this->_image.getSize().y);
 }
 
-//void Piece::setImage(const std::string & image_filename)
-//{
-//	this->_filename = image_filename;
-//	this->_image.loadFromFile(image_filename);
-//	this->_texture.loadFromImage(this->_image);
-//	this->_sprite.setTexture(this->_texture);
-//	this->_sprite.setScale(static_cast<float>(this->_width) / this->_image.getSize().x,
-//		static_cast<float>(this->_height) / this->_image.getSize().y);
-//}
 
 void Piece::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {

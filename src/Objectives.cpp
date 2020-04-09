@@ -1,12 +1,5 @@
 #include "Objectives.h"
 
-	//float _objectivesXPos;
-	//float _objectivesYPos;
-	//int _objectivesHeight;
-	//int _objectivesWidth;
-	//sf::RectangleShape _shape;
-	//sf::Color _color
-
 Objectives::Objectives()
 {}
 
@@ -27,15 +20,13 @@ Objectives::Objectives(const std::vector<std::pair<utils::PieceType, int>>& obje
 	bool succeeded = this->_textFont.loadFromFile(utils::OBJECTIVES_FONT_FILENAME);
 	if (!succeeded)
 	{
-		std::cout << "Can't load font\n";
-		return;
+		throw std::logic_error("Could not load font.\n");
 	}
 	
 	this->_gems.resize(this->_objectives.size());
 
 	for(int i = 0; i < this->_objectives.size(); ++i)
 	{
-		// std::string getGemImageFilename(PieceType gem_type);
 		this->_gems[i].first.setImage(this->_objectives[i].first);		
 		this->_gems[i].first.setPosition(this->_shape.getPosition().x + utils::OBJECTIVES_OFFSET.y + utils::OBJECTIVES_OFFSET.x * i, this->_shape.getPosition().y + utils::OBJECTIVES_OFFSET.y);
 		this->_gems[i].second.setFont(this->_textFont);
@@ -60,12 +51,9 @@ void Objectives::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		}
 	}
 }
-// std::vector<std::pair<utils::PieceType, int>> _objectives;
-// std::vector<std::pair<Gem, sf::Text>> _gems;
 
 void Objectives::updateObjectives(const std::vector<std::pair<utils::PieceType, int>>& objectives)
 {
-	//system("pause");
 	this->_objectives = objectives;
 	for (int i = 0; i < this->_objectives.size(); ++i)
 	{

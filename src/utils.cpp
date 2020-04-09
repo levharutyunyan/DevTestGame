@@ -132,24 +132,6 @@ namespace utils
 		return PieceType::UNKNOWN;
 	}
 
-	bool isValidPattern(const Pattern & pattern)
-	{
-		if (pattern.size() < 3)
-		{
-			return false;
-		}
-
-		std::set<int> x_coords;
-		std::set<int> y_coords;
-		for (auto& it : pattern)
-		{
-			x_coords.insert(it.x);
-			y_coords.insert(it.y);
-		}
-
-		return x_coords.size() >= 3 || y_coords.size() >= 3;
-	}
-	
 	bool compareVector2i::operator()(const sf::Vector2i & lhs, const sf::Vector2i & rhs)
 	{
 		if ((lhs.x + lhs.y)*(lhs.x + lhs.y) < (rhs.x + rhs.y)*(rhs.x + rhs.y))

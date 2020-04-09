@@ -52,8 +52,6 @@ public:
 	
 	bool getTurnResult() const;
 private:
-	// bool isCorrectJsonFile(const std::string& json_filename,
-		// Json::Reader& reader, Json::Value& root) const;
 	bool parseJsonFile(const std::string& json_filename);
 	void getGraphicsElements();
 	void fillTiles();
@@ -84,7 +82,6 @@ private:
 	bool findVerticalMatch(sf::Vector2i position, utils::Pattern & pattern);
 private:
 	// Grid status == CHECKING
-	//utils::Pattern findPattern(const sf::Vector2i& position);
 	void checkColumn(int columnIndex);
 	bool updateAffectedColumns();
 	void checkAffectedColumns();
@@ -97,9 +94,6 @@ private:
 	void dropAffectedColumns();
 	void dropDown(int columnIndex);
 	
-	//void rearangeGemsPositions();
-	//void dropAffectedColumns();
-
 	// Grid status == CREATING
 	void generateNewGems();
 

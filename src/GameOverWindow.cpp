@@ -13,8 +13,7 @@ GameOverWindow::GameOverWindow()
 	bool succeeded = this->_textFont.loadFromFile(utils::TURNS_FONT_FILENAME);
 	if (!succeeded)
 	{
-		std::cout << "Can't load font\n";
-		return;
+		throw std::logic_error("Could not open font.\n");
 	}
 
 	this->_shape.setPosition(this->_windowXPos, this->_windowYPos);

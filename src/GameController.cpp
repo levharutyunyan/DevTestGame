@@ -1,5 +1,4 @@
 #include "GameController.h"
-//#include "utils.h"
 
 GameController::GameController()
 	: _gameStatus(GameStatus::Playing)
@@ -13,8 +12,6 @@ GameController::GameController()
 	, _isClicked(false)
 	, _clickedGems(utils::NULL_GEM_PAIR)
 {
-	/*parseConfigFile(utils::CONFIG_FILENAME);
-	this->_grid = new GameGrid(utils::CONFIG_FILENAME, this->_objectives->getObjectives());*/
 }
 
 void GameController::parseConfigFile(const std::string & configFilename)
@@ -36,11 +33,6 @@ void GameController::parseConfigFile(const std::string & configFilename)
 
 GameController::~GameController()
 {
-	//delete this->_app;
-	//delete this->_grid;
-	//delete this->_objectives;
-	//delete this->_turns;
-	//delete this->_gameOverWindow;
 }
 
 bool GameController::isCorrectConfigFile(const std::string & configFilename, Json::Reader & reader, Json::Value & root)
@@ -54,28 +46,28 @@ bool GameController::isCorrectConfigFile(const std::string & configFilename, Jso
 			if (!root["board_row_size"].isInt() || utils::MIN_ROWS > root["board_row_size"].asInt()
 				|| root["board_row_size"].asInt() > utils::MAX_ROWS)
 			{
-				return false;
+				throw std::logic_error("Not correct board_row_size in config file.\n");
 			}
 			if (!root["board_column_size"].isInt() || utils::MIN_COLUMNS > root["board_column_size"].asInt()
 				|| root["board_column_size"].asInt() > utils::MAX_COLUMNS)
 			{
-				return false;
+				throw std::logic_error("Not correct board_column_size in config file.\n");
 			}
 			if (!root["objectives"].isArray() || utils::MIN_OBJECTIVES_COUNT > root["objectives"].size()
 				|| root["objectives"].size() > utils::MAX_OBJECTIVES_COUNT)
 			{
-				return false;
+				throw std::logic_error("Not correct objectives in config file.\n");
 			}
 			if (!root["figures_colors_count"].isInt() || utils::MIN_FIGURES_COUNT > root["figures_colors_count"].asInt()
 				|| root["figures_colors_count"].asInt() > utils::MAX_FIGURES_COUNT)
 			{
-				return false;
+				throw std::logic_error("Not correct figures_colors_count in config file.\n");
 			}
 			int figures_count = root["figures_colors_count"].asInt();
 			int obj_size = root["objectives"].size();
 			if (root["figures_colors_count"].asInt() < static_cast<int>(root["objectives"].size()))
 			{
-				return false;
+				throw std::logic_error("Not enough figures_colors_count to set objectives.\n");
 			}
 			std::vector<utils::PieceType> objectiveGems;
 			for (std::size_t i = 0; i < root["objectives"].size(); ++i)
@@ -84,7 +76,7 @@ bool GameController::isCorrectConfigFile(const std::string & configFilename, Jso
 					|| root["objectives"][(int)i][1].isInt() == false
 					|| root["objectives"][(int)i][1].asInt() < 0)
 				{
-					return false;
+					throw std::logic_error("Specified objectives are not correct.\n");
 				}
 				std::string type = root["objectives"][(int)i][0].asString();
 				objectiveGems.push_back(utils::getPieceType(type));
@@ -93,7 +85,7 @@ bool GameController::isCorrectConfigFile(const std::string & configFilename, Jso
 			{
 				if (objectiveGems[i] == utils::PieceType::UNKNOWN)
 				{
-					return false;
+					throw std::logic_error("Found unknown gem type in objectives.\n");
 				}
 			}
 			for (int i = 0; i < objectiveGems.size(); ++i)
@@ -102,15 +94,14 @@ bool GameController::isCorrectConfigFile(const std::string & configFilename, Jso
 				{
 					if (objectiveGems[i] == objectiveGems[j])
 					{
-						return false;
+						throw std::logic_error("Found duplicate gem type in objectives.\n");
 					}
 				}
 			}
 		}
 		else
 		{
-			std::cout << reader.getFormattedErrorMessages();
-			return false;
+			throw std::logic_error(reader.getFormattedErrorMessages());
 		}
 	}
 	return true;
@@ -149,11 +140,6 @@ void GameController::run()
     while (this->_app->isOpen()) 
     {
 		updateStatus();
-		/*if (this->_gameStatus != GameStatus::Playing)
-		{
-			this->_app->draw(*this->_gameOverWindow);
-		}
-        */
 		this->_app->clear(utils::GAME_CONTROLLER_COLOR);
 
 		sf::Event event;
@@ -169,7 +155,6 @@ void GameController::run()
 				{
 					this->_isClicked = true;
 					++this->_clickCount;
-					// std::cout << "mouse clicked: " << this->_clickCount << "\n";
 					this->_mouse_pos = sf::Mouse::getPosition(*_app);
 				}
 			}
@@ -198,8 +183,6 @@ void GameController::updateClickedGems()
 		return;
 	}
 	sf::Vector2i currentGem = this->_grid->getGridIndices(this->_mouse_pos);
-	std::cout << "updating clickedGems\n";
-	std::cout << "click: " << this->_clickCount << " " << currentGem.x << " " << currentGem.y << "\n";
 
 	if (currentGem.x < 0 || currentGem.x >= this->_grid->getRows() 
 		|| currentGem.y < 0 || currentGem.y >= this->_grid->getColumns())
@@ -213,6 +196,7 @@ void GameController::updateClickedGems()
 		this->_grid->toggleTile(currentGem);
 		if (this->_grid->isBomb(currentGem) == true)
 		{
+			std::cout << "clicked bomb: "  << " " << currentGem.x << " " << currentGem.y << "\n";
 			this->_grid->detonateBomb(currentGem);
 			this->_grid->setStatus(GridStatus::CHECKING);
 			this->_turns->updateTurns();
@@ -222,6 +206,9 @@ void GameController::updateClickedGems()
 	else if (this->_clickCount == 2)
 	{
 		this->_clickedGems.second = currentGem;
+		std::cout << "clicked gems\n";
+		std::cout << "gem 1: " << this->_clickedGems.first.x << " " << this->_clickedGems.first.y << "\n";
+		std::cout << "gem 2: " << this->_clickCount << " " << this->_clickedGems.second.x << " " << this->_clickedGems.second.y << "\n";
 		this->_grid->toggleTile(currentGem);
 		
 		if (std::abs(this->_clickedGems.first.x - this->_clickedGems.second.x) + std::abs(this->_clickedGems.first.y - this->_clickedGems.second.y) == 1
@@ -240,58 +227,6 @@ void GameController::updateClickedGems()
 	}
 }
 
-//void GameController::updateClickedGems()
-//{
-//	if (this->_isClicked == false)
-//	{
-//		return;
-//	}
-//
-//	sf::Vector2i currentGem = this->_grid->getGridIndices(this->_mouse_pos);
-//	std::cout << "updating clickedGems\n";
-//	std::cout << "click: " << this->_clickCount << " " << currentGem.x << " " << currentGem.y << "\n";
-//
-//	if (currentGem.x < 0 || currentGem.x >= this->_grid->getRows()
-//		|| currentGem.y < 0 || currentGem.y >= this->_grid->getColumns())
-//	{
-//		--this->_clickCount;
-//		return;
-//	}
-//	this->_grid->toggleTile(currentGem);
-//	if (this->_clickCount == 1)
-//	{
-//		this->_clickedGems.first = currentGem;
-//		if (this->_grid->isBomb(currentGem) == true)
-//		{
-//			this->_grid->detonateBomb(currentGem);
-//			this->_grid->setStatus(GridStatus::CHECKING);
-//			this->_grid->toggleTile(currentGem);
-//			--this->_clickCount;
-//			this->_clickedGems = utils::NULL_GEM_PAIR;
-//		}
-//	}
-//	else if (this->_clickCount == 2)
-//	{
-//		this->_clickedGems.second = currentGem;
-//		//this->_grid->toggleTile(currentGem);
-//
-//		if (std::abs(this->_clickedGems.first.x - this->_clickedGems.second.x) + std::abs(this->_clickedGems.first.y - this->_clickedGems.second.y) == 1
-//			&& this->_grid->isBomb(currentGem) != true)
-//		{
-//			bool isSuccessfuTurn = this->_grid->swapGems(this->_clickedGems);
-//			if (isSuccessfuTurn)
-//			{
-//				this->_turns->updateTurns();
-//			}
-//		}
-//		this->_grid->toggleTile(this->_clickedGems.first);
-//		this->_grid->toggleTile(this->_clickedGems.second);
-//		this->_clickedGems = utils::NULL_GEM_PAIR;
-//		this->_clickCount -= 2;
-//	}
-//	this->_isClicked = false;
-//}
-
 
 void GameController::updateStatus()
 {
@@ -309,17 +244,17 @@ void GameController::updateStatus()
 		{
 			this->_gameStatus = GameStatus::Won;
 		}
-		break;
+		return;
 	}
 	case GameStatus::Won:
 	{
 		this->_gameOverWindow->haveWon(true);
-		break;
+		return;
 	}
 	case GameStatus::Failed:
 	{
 		this->_gameOverWindow->haveWon(false);
-		break;
+		return;
 	}
 	}
 }

@@ -11,7 +11,6 @@ struct Piece : public sf::Drawable, public sf::Transformable
 public:
 	Piece(int width, int height);
 	Piece();
-	//void setImage(const std::string& image_filename);
 	void setImage(utils::PieceType type);
 	friend void swap(Piece& lhs, Piece& rhs);
 	utils::PieceType getPieceType() const;

@@ -17,7 +17,6 @@ utils::TileType Tile::getTileType() const
 }
 void Tile::setTexture(utils::TileType type)
 {
-	//this->_tileType = type;
 	setImage(utils::getTileImageFilename(type));
 }
 void Tile::setTileType(utils::TileType type)

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
+#include <exception>
 #include <SFML/Graphics.hpp>
 #include "GameGrid.h"
 #include "Objectives.h"
