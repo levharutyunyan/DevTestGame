@@ -20,9 +20,9 @@ GameGrid::GameGrid(const std::string& json_filename,
 	this->_affectedColumns.resize(this->_gems[0].size(), true);
 	
 	using namespace std::placeholders;
+	this->_patternFinders.push_back(std::bind(&GameGrid::findBoxPattern, this, _1, _2));
 	this->_patternFinders.push_back(std::bind(&GameGrid::findHorizontalPattern, this, _1, _2));
 	this->_patternFinders.push_back(std::bind(&GameGrid::findVerticalPattern, this, _1, _2));
-	this->_patternFinders.push_back(std::bind(&GameGrid::findBoxPattern, this, _1, _2));
 }
 
 bool GameGrid::parseJsonFile(const std::string& json_filename)
@@ -218,6 +218,7 @@ std::vector<std::pair<utils::PieceType, int>> GameGrid::getUpdatedObjectives() c
 
 void GameGrid::toggleTile(sf::Vector2i pos)
 {
+	std::cout << "toggling " << pos.x << " " << pos.y << "\n";
 	this->_tiles[pos.x][pos.y].toggleSelected();
 }
 

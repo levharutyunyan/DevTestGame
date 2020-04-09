@@ -120,7 +120,6 @@ void GameController::update()
 		this->_objectives->updateObjectives(this->_grid->getUpdatedObjectives());
 	}
 	this->_grid->updateStatus();	
-	updateClickedGems();
 }
 
 void GameController::draw()
@@ -156,6 +155,7 @@ void GameController::run()
 					this->_isClicked = true;
 					++this->_clickCount;
 					this->_mouse_pos = sf::Mouse::getPosition(*_app);
+					updateClickedGems();
 				}
 			}
         }
@@ -193,13 +193,14 @@ void GameController::updateClickedGems()
 	if (this->_clickCount == 1)
 	{
 		this->_clickedGems.first = currentGem;
-		this->_grid->toggleTile(currentGem);
+		this->_grid->toggleTile(this->_clickedGems.first);
 		if (this->_grid->isBomb(currentGem) == true)
 		{
 			std::cout << "clicked bomb: "  << " " << currentGem.x << " " << currentGem.y << "\n";
 			this->_grid->detonateBomb(currentGem);
 			this->_grid->setStatus(GridStatus::CHECKING);
 			this->_turns->updateTurns();
+			this->_grid->toggleTile(this->_clickedGems.first);
 			--this->_clickCount;
 		}
 	}
@@ -208,8 +209,9 @@ void GameController::updateClickedGems()
 		this->_clickedGems.second = currentGem;
 		std::cout << "clicked gems\n";
 		std::cout << "gem 1: " << this->_clickedGems.first.x << " " << this->_clickedGems.first.y << "\n";
-		std::cout << "gem 2: " << this->_clickCount << " " << this->_clickedGems.second.x << " " << this->_clickedGems.second.y << "\n";
-		this->_grid->toggleTile(currentGem);
+		std::cout << "gem 2: " << " " << this->_clickedGems.second.x << " " << this->_clickedGems.second.y << "\n";
+		//this->_grid->toggleTile(this->_clickedGems.first);
+		this->_grid->toggleTile(this->_clickedGems.second);
 		
 		if (std::abs(this->_clickedGems.first.x - this->_clickedGems.second.x) + std::abs(this->_clickedGems.first.y - this->_clickedGems.second.y) == 1
 			&& this->_grid->isBomb(currentGem) != true)
